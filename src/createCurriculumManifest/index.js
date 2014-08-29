@@ -5,15 +5,11 @@ var gutil = require('gulp-util');
 var PluginError = gutil.PluginError;
 
 var _ = require('lodash');
-var jquery = require('jquery');
-var jsdom = require('jsdom').jsdom;
-
-var UUID = require('node-uuid');
 
 var buildTree = require('./document-node');
 var attachContent = require('./attach-content');
 
-const PLUGIN_NAME = 'gulp-manifest-curriculum';
+const PLUGIN_NAME = 'gulp-create-curriculum-manifest';
 
 module.exports = function(options) {
     options = options || {};

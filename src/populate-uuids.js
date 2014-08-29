@@ -5,21 +5,23 @@ var gutil = require('gulp-util');
 var PluginError = gutil.PluginError;
 
 var _ = require('lodash');
-
 var BeautifyHTML = require('js-beautify').html;
-var jsdom = require('jsdom').jsdom;
-var jquery = require('jquery');
 var UUID = require('node-uuid')
 
-// consts
-const PLUGIN_NAME = 'gulp-structure-xml';
+var createDOM = require('./create-dom');
 
+
+const PLUGIN_NAME = 'gulp-populate-uuids';
+
+
+
+/**
+ * Assigns UUIDs where missing to an XML string
+ * @param  {String} xmlStr The xml contents to ID
+ * @return {String}        A string with the newly generated IDs
+ */
 var populate = function (xmlStr) {
-    var html = _.template(
-        "<html><head></head><body> <%= structure %> </body></html>", {
-        structure: xmlStr
-    });
-    var $ = jquery(jsdom(html).parentWindow);
+    var $ = createDOM(xmlStr);
     var foreigners = $('*').not('[uuid]')
         .not('metadata, metadata *, content, intro')
         .toArray();
@@ -37,6 +39,7 @@ var populate = function (xmlStr) {
 
     return BeautifyHTML(xmlStr);
 }
+
 
 module.exports = function() {
     return through2.obj(function(file, enc, done) {

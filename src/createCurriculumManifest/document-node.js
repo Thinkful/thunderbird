@@ -3,24 +3,23 @@ var gutil = require('gulp-util');
 var PluginError = gutil.PluginError;
 
 var _ = require('lodash');
-
-var jsdom = require('jsdom').jsdom;
-var jquery = require('jquery');
-var jqueryPath = require.resolve('jquery');
-
-var UUID = require('node-uuid')
-
 var BeautifyHTML = require('js-beautify').html;
 
+var createDOM = require('../create-dom');
+
+
+/**
+ * Creates DocumentNode, creates tree if children present
+ * @param {Object} options should contain element reference and $DOM reference
+ */
 var DocumentNode = function(options) {
     this.initialize(options);
 };
 
 
 /**
- * Initializes DocumentNode, requires options to include element and dom
- * @param  {[type]} options [description]
- * @return {[type]}         [description]
+ * Initializes DocumentNode with root reference=, metadata and children
+ * @param {Object} options {element, $DOM, root?, parent?}
  */
 DocumentNode.prototype.initialize = function(options) {
     // Assigns $, element, other options and defaults
@@ -42,6 +41,7 @@ DocumentNode.prototype.initialize = function(options) {
 
     this._setChildren();
 };
+
 
 /**
  * Returns element > content when present, an idiosyncrasy of the root node
@@ -132,18 +132,9 @@ DocumentNode.prototype.toJSON = function() {
 };
 
 
-DocumentNode.prototype.toHTML = function () {
-    return BeautifyHTML(this.root.$('body').html());
-}
-
-
 module.exports = function(file){
     var xmlStr = file.contents.toString('utf8');
-    var html = _.template(
-        "<html><head></head><body><%= structure %></body></html>", {
-        structure: xmlStr
-    });
-    var $ = jquery(jsdom(html).parentWindow);
+    var $ = createDOM(xmlStr);
     var courseElement = $('course')[0];
     var treeRoot = new DocumentNode({$: $, element: courseElement });
 
