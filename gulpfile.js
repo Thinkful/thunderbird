@@ -6,9 +6,8 @@ gulp.task('tree', function() {
     gulp.src('./test/**/structure.xml')
         .pipe(populateUUIDs())
         .pipe(createCurriculumManifest())
-        .pipe(gulp.dest('./'))
-    ;
-})
+        .pipe(gulp.dest('./'));
+});
 
 gulp.task('default', ['tree']);
 

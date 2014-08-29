@@ -13,6 +13,14 @@ var createDOM = require('./create-dom');
 
 const PLUGIN_NAME = 'gulp-populate-uuids';
 
+/**
+ *  Whitelisted nodes where UUID's are added
+ **/
+var uuidNodeWhitelist = [
+    "unit",
+    "lesson",
+    "assignment"
+];
 
 
 /**
@@ -22,21 +30,29 @@ const PLUGIN_NAME = 'gulp-populate-uuids';
  */
 var populate = function (xmlStr) {
     var $ = createDOM(xmlStr);
-    var foreigners = $('*').not('[uuid]')
-        .not('metadata, metadata *, content, intro')
-        .toArray();
-    var uuids = _.transform($('[uuid]').toArray(), function(list, el) {
-        return $(el).attr('uuid');
+
+    var existingUUIDs = _.map($('[uuid]'), function(el) {
+        return el.getAttribute("uuid");
     });
 
-    _.each(foreigners, function(element) {
+    var getNextNode = function() {
+        return $(uuidNodeWhitelist.join(',')).not('[uuid]').first();
+    }
+
+    var node = getNextNode();
+    while (node.length > 0) {
         var uid = UUID.v1();
-        assert(_.indexOf(uuids, uid) === -1, "UUID Collision using v1 method");
-        $(element).attr('uuid', UUID.v1());
-    });
+        // If there is a collision with the existing UUIDs, retry
+        if (_.indexOf(existingUUIDs, uid) != -1) {
+            continue;
+        }
+
+        node.attr("uuid", uid);
+        existingUUIDs.push(uid);
+        node = getNextNode();
+    }
 
     xmlStr = $('body').html();
-
     return BeautifyHTML(xmlStr);
 }
 
