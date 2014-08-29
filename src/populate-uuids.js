@@ -53,7 +53,7 @@ module.exports = function() {
 
         var xmlStr = file.contents.toString('utf8');
         xmlStr = populate(xmlStr);
-        xmlStr = BeautifyHTML(xmlStr);
+
         this.push(new gutil.File({
             path: file.path,
             contents: new Buffer(xmlStr)
