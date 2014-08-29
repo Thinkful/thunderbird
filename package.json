@@ -4,8 +4,7 @@
   "description": "Create curricula suitable for Eagle to consume.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "preinstall": "(cd legacy; npm install)"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -24,6 +23,12 @@
     "marked": "^0.3.2",
     "node-uuid": "^1.4.1",
     "q": "^1.0.1",
-    "q-io": "^1.11.4"
+    "q-io": "^1.11.4",
+    "gulp": "^3.8.7",
+    "through2": "^0.6.1",
+    "gulp-util": "^3.0.1",
+    "lodash": "^2.4.1",
+    "jsdom": "^1.0.0-pre.4",
+    "jquery": "^2.1.1"
   }
 }
