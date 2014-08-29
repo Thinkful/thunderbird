@@ -1,0 +1,29 @@
+{
+  "name": "thinkdown",
+  "version": "0.0.0",
+  "description": "Create curricula suitable for Eagle to consume.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "preinstall": "(cd legacy; npm install)"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thinkful/thinkdown.git)"
+  },
+  "author": "Thinkful",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/thinkful/thinkdown.git)/issues"
+  },
+  "homepage": "https://github.com/thinkful/thinkdown.git)",
+  "dependencies": {
+    "front-matter": "^0.2.0",
+    "glob": "^4.0.5",
+    "js-beautify": "^1.5.1",
+    "marked": "^0.3.2",
+    "node-uuid": "^1.4.1",
+    "q": "^1.0.1",
+    "q-io": "^1.11.4"
+  }
+}
