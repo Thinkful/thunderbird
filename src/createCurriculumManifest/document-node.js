@@ -81,8 +81,10 @@ DocumentNode.prototype.setChildren = function() {
 
 DocumentNode.prototype.toJSON = function() {
     var obj = _(this)
-        .omit('element', 'parent', 'root')
-        .omit(_.isFunction)
+        .omit('element', 'parent', 'root', '_deferred', 'nodeFunctions')
+        .omit(function(value, key) {
+            this.hasOwnProperty(key);
+        })
     .value();
 
     obj.parent = this.parent ? this.parent.uuid : null;
