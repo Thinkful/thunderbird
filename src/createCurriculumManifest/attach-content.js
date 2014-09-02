@@ -35,11 +35,14 @@ var parseMarkdown = function(str) {
 }
 
 module.exports = function(options) {
+    var dirname = path.dirname(options.file.path);
+
     return function(node) {
         if (node === node.root) {
             return Q.when(true);
         }
-        var _path = path.resolve(path.dirname(options.file.path), node.src);
+
+        var _path = path.resolve(dirname, node.src);
 
         node.content = {};
 
