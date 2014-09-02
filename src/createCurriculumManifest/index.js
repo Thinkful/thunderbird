@@ -41,18 +41,15 @@ module.exports = function(options) {
         // then we're done! Saves the file.
         var stream = this;
         treePromise.then(function(treeRoot) {
-            console.log("Completed Tree: ", treeRoot);
-            debugger;
-
             stream.push(new gutil.File({
               path: path.resolve(rootDirectory, options.filename),
               contents: new Buffer(JSON.stringify(treeRoot.toJSON(), null, 4))
             }));
 
-            stream.done();
+            done();
         }, function() {
             gutil.log.info("Tree building error! ");
-            stream.done(new PluginError(PLUGIN_NAME, 'Error building tree'));
+            done(new PluginError(PLUGIN_NAME, 'Error building tree'));
         });
     });
 };

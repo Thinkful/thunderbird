@@ -78,11 +78,13 @@ DocumentNode.prototype.setChildren = function() {
     });
 }
 
-
 DocumentNode.prototype.toJSON = function() {
+    var self = this;
     var obj = _(this)
-        .omit('element', 'parent', 'root')
-        .omit(_.isFunction)
+        .omit('element', 'parent', 'root', '_deferred')
+        .omit(function(value, key){
+            return !_.has(self, key);
+        })
     .value();
 
     obj.parent = this.parent ? this.parent.uuid : null;
@@ -91,7 +93,6 @@ DocumentNode.prototype.toJSON = function() {
 
     return obj;
 };
-
 
 var buildTree = module.exports = function(file, nodeFunctions){
     var xmlStr = file.contents.toString('utf8');
