@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var Q = require('q');
 
 /*
  * Creates an object from HTML element attributes
@@ -56,6 +57,8 @@ var setMetadata = module.exports = function(node) {
 
     /* Metadata from xml element attributes */
     _.bind(_setMetadata, node)();
+
+    return Q.when(1);
 };
 
 

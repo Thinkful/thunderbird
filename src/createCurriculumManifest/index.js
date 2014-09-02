@@ -41,7 +41,8 @@ module.exports = function(options) {
         // then we're done! Saves the file.
         var stream = this;
         treePromise.then(function(treeRoot) {
-            gutil.log.info("Completed Tree: ", treeRoot);
+            console.log("Completed Tree: ", treeRoot);
+            debugger;
 
             stream.push(new gutil.File({
               path: path.resolve(rootDirectory, options.filename),

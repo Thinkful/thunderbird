@@ -30,11 +30,11 @@ var DocumentNode = function(options) {
     var childPromises = Q.all(this.setChildren());
     var currentNodePromise = Q.all(this.nodeFunctions);
 
-    this._deferred.resolve(
-        Q.all([childPromises, currentNodePromise])
-    );
+    var self = this;
 
-    return this;
+    Q.all([childPromises, currentNodePromise]).done( function(){
+        self._deferred.resolve(self);
+    });
 };
 
 DocumentNode.prototype.getPromise = function() {
@@ -103,7 +103,6 @@ var buildTree = module.exports = function(file, nodeFunctions){
         "$": $,
         element: $(":root")[0],
     });
-    debugger;
 
     return doc.getPromise();
 };
