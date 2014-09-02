@@ -5,7 +5,7 @@ var Q = require('q');
  * Creates an object from HTML element attributes
  */
 collectAttributes = function(element) {
-    var meta = _( element.attributes ).toArray()
+    return _( element.attributes ).toArray()
         // Returns array of (property, value) tuples from
         //  (attr.name, attr.value)
         .map(function(attr){ return [attr.name, attr.value] })
