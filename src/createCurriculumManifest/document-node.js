@@ -23,23 +23,18 @@ var DocumentNode = function(options) {
     // Initializes root
     if (_.isEmpty(this.parent)) {
         this.root = this;
-        // Adds a list for all nodes in the tree
     }
 
-
-    var childPromises = Q.all(this.setChildren());
-    var currentNodePromise = Q.all(this.nodeFunctions);
-
     var self = this;
-
-    Q.all([childPromises, currentNodePromise]).done( function(){
-        self._deferred.resolve(self);
-    });
+    this.promise = Q.all([
+        Q.all(this.setChildren()),
+        Q.all(
+            _.map(this.operators, function(fn) {
+                return fn(self);
+            })
+        )
+    ]).then(_.constant(self));
 };
-
-DocumentNode.prototype.getPromise = function() {
-    return this._deferred.promise;
-}
 
 
 /**
@@ -74,14 +69,14 @@ DocumentNode.prototype.setChildren = function() {
     .value();
 
     return _.map(this.children, function(child) {
-        return child.getPromise();
+        return child.promise;
     });
 }
 
 DocumentNode.prototype.toJSON = function() {
     var self = this;
     var obj = _(this)
-        .omit('element', 'parent', 'root', '_deferred')
+        .omit('element', 'parent', 'root', 'file', '_deferred')
         .omit(function(value, key){
             return !_.has(self, key);
         })
@@ -94,16 +89,19 @@ DocumentNode.prototype.toJSON = function() {
     return obj;
 };
 
-var buildTree = module.exports = function(file, nodeFunctions){
+var buildTree = module.exports = function(file, operators){
     var xmlStr = file.contents.toString('utf8');
     var $ = createDOM(xmlStr);
 
-    DocumentNode.prototype.nodeFunctions = nodeFunctions || [function() {}];
+    DocumentNode.prototype.operators = operators || [function() {}];
+    _.each(operators, function(fn, index) {
+        DocumentNode.prototype["_op"+index] = fn;
+    })
 
     var doc = new DocumentNode({
         "$": $,
-        element: $(":root")[0],
+        "element": $("course")[0]
     });
 
-    return doc.getPromise();
+    return doc.promise;
 };

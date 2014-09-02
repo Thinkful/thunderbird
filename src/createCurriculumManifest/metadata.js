@@ -14,17 +14,17 @@ collectAttributes = function(element) {
     .value();
 }
 
-_setMetadata_legacy = function() {
-    var $ = this.root.$;
-    var $element = $(this.element);
+_setMetadata_legacy = function(node, options) {
+    var $ = node.root.$;
+    var $element = $(node.element);
 
     /* Some legacy elements have an intro tag where src="" and other
      * attributes are specified.
      *
      */
-    var $intro = this.get$contentElement().children('intro');
+    var $intro = node.get$contentElement().children('intro');
     if ($intro.size()) {
-        _.defaults(this, collectAttributes($intro[0]));
+        _.defaults(node, collectAttributes($intro[0]));
     }
 
     /* The root element has an XML child `metadata` that contains
@@ -39,26 +39,29 @@ _setMetadata_legacy = function() {
                 return [tag.tagName.toLowerCase(), $(tag).text()] })
             .zipObject()
         .value();
-        _.defaults(this, metaData);
+        _.defaults(node, metaData);
     }
 }
 
 /*
  * Assigns element attributes to the DocumentNode
  */
-var _setMetadata = function() {
-    var meta = collectAttributes(this.element);
-    _.defaults(this, meta);
+var _setMetadata = function(node, options) {
+    var meta = collectAttributes(node.element);
+    _.defaults(node, meta);
 }
 
-var setMetadata = module.exports = function(node) {
-    /* Legacy methods for storing metadata */
-    _.bind(_setMetadata_legacy, node)();
+var setMetadata = module.exports = function(options) {
+    return function (node) {
+        /* Legacy methods for storing metadata */
+        _setMetadata_legacy(node, options);
 
-    /* Metadata from xml element attributes */
-    _.bind(_setMetadata, node)();
+        /* Metadata from xml element attributes */
+        _setMetadata(node, options);
 
-    return Q.when(1);
+        return Q.when(1);
+
+    }
 };
 
 

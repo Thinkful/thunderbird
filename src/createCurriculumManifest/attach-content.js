@@ -25,7 +25,7 @@ var parseMarkdown = function(str) {
         // throws for improperly formatted yaml, see front matter from:
         //  Unit 4 of NODE-001
         //      Intermediate Node.js Deploying and Platforms as a Service
-        gutil.log(file.path, '\n', e.problem, e.stack);
+        throw new Error(e.problem, e.stack);
     }
     if(_.isObject(parsed)) {
         parsed.body = marked(parsed.body);
@@ -34,10 +34,15 @@ var parseMarkdown = function(str) {
     return _.isObject(parsed) ? parsed : new Error("Could not parse markdown");
 }
 
-module.exports = function(dir, nodes) {
-    var promises = _.map(nodes, function (node, index) {
+module.exports = function(options) {
+    return function(node) {
+        if (node === node.root) {
+            return Q.when(true);
+        }
+        var _path = path.resolve(path.dirname(options.file.path), node.src);
+
         node.content = {};
-        var _path = path.resolve(dir, node.src);
+
         return Q.allSettled([
             Q.fs.read(path.resolve(_path, 'content.md'))
                 .then(parseMarkdown)
@@ -56,7 +61,5 @@ module.exports = function(dir, nodes) {
                     node.content.comprehension = str;
                 })
         ]);
-    });
-
-    return Q.allSettled(promises);
+    }
 }

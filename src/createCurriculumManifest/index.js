@@ -27,7 +27,8 @@ module.exports = function(options) {
         }
 
         var operationsPerNode = options.withContent ?
-            [setMetadata, attachContent] : [setMetadata];
+            [setMetadata(), attachContent({"file": file})]
+        :   [setMetadata()];
 
         var treePromise = buildTree(file, operationsPerNode);
 
