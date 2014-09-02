@@ -64,7 +64,7 @@ module.exports = function() {
         }
 
         if (file.isStream()) {
-            return done(new PluginError('gulp-less', 'Streaming not supported'));
+            return done(new PluginError('gulp-populate-uuids', 'Streaming not supported'));
         }
 
         var xmlStr = file.contents.toString('utf8');
