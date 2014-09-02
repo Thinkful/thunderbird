@@ -26,7 +26,7 @@ var DocumentNode = function(options) {
     }
 
     var self = this;
-    this.promise = Q.all([
+    var promise = Q.all([
         Q.all(this.setChildren()),
         Q.all(
             _.map(this.operators, function(fn) {
@@ -34,6 +34,8 @@ var DocumentNode = function(options) {
             })
         )
     ]).then(_.constant(self));
+
+    this.getPromise = _.constant(promise);
 };
 
 
@@ -69,14 +71,14 @@ DocumentNode.prototype.setChildren = function() {
     .value();
 
     return _.map(this.children, function(child) {
-        return child.promise;
+        return child.getPromise();
     });
 }
 
 DocumentNode.prototype.toJSON = function() {
     var self = this;
     var obj = _(this)
-        .omit('element', 'parent', 'root', 'file', '_deferred')
+        .omit('element', 'parent', 'root')
         .omit(function(value, key){
             return !_.has(self, key);
         })
@@ -103,5 +105,5 @@ var buildTree = module.exports = function(file, operators){
         "element": $("course")[0]
     });
 
-    return doc.promise;
+    return doc.getPromise();
 };
