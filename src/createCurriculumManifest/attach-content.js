@@ -35,7 +35,7 @@ var parseMarkdown = function(str) {
 }
 
 module.exports = function(dir, nodes) {
-    var promises = _.map(nodes, function (node, index, list) {
+    var promises = _.map(nodes, function (node, index) {
         node.content = {};
         var _path = path.resolve(dir, node.src);
         return Q.allSettled([
