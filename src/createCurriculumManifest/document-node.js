@@ -17,7 +17,6 @@ var DocumentNode = function(options) {
     // Assigns element, other options and defaults
     _.assign(this, options);
 
-    this._deferred = Q.defer();
     this.type = this.element.tagName.toLowerCase();
 
     // Initializes root
