@@ -8,19 +8,24 @@ var _ = require('lodash');
 var Q = require('q');
     Q.fs = require('q-io/fs');
 
-var fm = require('front-matter');
+var frontMatter = require('front-matter');
 var marked = require('marked');
 
 var parseMarkdown = function(str) {
     var parsed;
-    // Handles format errors in front matter markers
+
+
+    // Changes arbitrary -'d separators in the old thinkdown to three ---
+    str = str.replace(/\n\s*----+\s*\n/g, '\n---\n');
+
+    // Prepends --- to parse old thinkdown format as front matter
     if (!/---/.test(str.split('\n')[0])) {
         str = '---\n' + str;
-        str = str.replace('----------', '---');
     }
+
     // Extracts front matter and body
     try {
-        parsed = fm(str)
+        parsed = frontMatter(str);
     } catch(e) {
         // throws for improperly formatted yaml, see front matter from:
         //  Unit 4 of NODE-001
@@ -38,7 +43,11 @@ module.exports = function(options) {
     var dirname = path.dirname(options.file.path);
 
     return function(node) {
-        if (node === node.root) {
+        // Quits if not src attribute is present
+        if (_.isEmpty(node.src)) {
+            gutil.log(gutil.colors.yellow(
+                "Element", node.type, "has no src= attribute"
+            ));
             return Q.when(true);
         }
 

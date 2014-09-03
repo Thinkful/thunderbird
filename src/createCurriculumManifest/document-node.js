@@ -57,7 +57,6 @@ DocumentNode.prototype.get$contentElement = function() {
 DocumentNode.prototype.setChildren = function() {
     var self = this;
     var children = this.get$contentElement().children().not('intro').toArray();
-    var promises = []
     // Creates node for each child element
     this.children = _( children )
         .map(function (element) {
@@ -95,9 +94,6 @@ var buildTree = module.exports = function(file, operators){
     var $ = createDOM(xmlStr);
 
     DocumentNode.prototype.operators = operators || [function() {}];
-    _.each(operators, function(fn, index) {
-        DocumentNode.prototype["_op"+index] = fn;
-    })
 
     var doc = new DocumentNode({
         "$": $,
