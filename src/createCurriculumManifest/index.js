@@ -14,7 +14,6 @@ const PLUGIN_NAME = 'gulp-create-curriculum-manifest';
 
 module.exports = function(options) {
     options = options || {};
-    options.withContent = options.withContent || true;
     options.filename = options.filename || "curriculum.json";
 
     return through2.obj(function(file, enc, done) {
@@ -26,9 +25,15 @@ module.exports = function(options) {
             return done(new PluginError(PLUGIN_NAME, 'Streaming not supported'));
         }
 
-        var operationsPerNode = options.withContent ?
-            [setMetadata(), attachContent({"file": file})]
-        :   [setMetadata()];
+        var operationsPerNode = [
+            // Attaches metadata from structure.xml,
+            // including legacy structures / intro / contents etc
+            setMetadata(),
+            // Attaches metadata from content.md files
+            // Attaches course body from content.md, content.html
+            // Attaches comprehension content from comprehension.md
+            attachContent({"file": file})
+        ];
 
         var treePromise = buildTree(file, operationsPerNode);
 

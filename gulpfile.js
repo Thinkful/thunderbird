@@ -6,7 +6,6 @@ gulp.task('tree', function() {
     gulp.src('./test/**/structure.xml')
         .pipe(populateUUIDs())
         .pipe(createCurriculumManifest({
-          withContent: true,
           filename: "curriculum.json"
         }))
         .pipe(gulp.dest('./'));
