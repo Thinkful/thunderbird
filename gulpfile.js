@@ -3,7 +3,7 @@ var createCurriculumManifest = require('./src/createCurriculumManifest');
 var populateUUIDs = require('./src/populate-uuids');
 
 gulp.task('tree', function() {
-    gulp.src('./test/**/structure.xml')
+    gulp.src('**/structure.xml')
         .pipe(populateUUIDs())
         .pipe(createCurriculumManifest({
           filename: "curriculum.json"
