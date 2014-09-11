@@ -5,7 +5,9 @@ var populateUUIDs = require('./src/populate-uuids');
 gulp.task('tree', function() {
     gulp.src('./test/**/structure.xml')
         .pipe(populateUUIDs())
-        .pipe(createCurriculumManifest())
+        .pipe(createCurriculumManifest({
+          filename: "curriculum.json"
+        }))
         .pipe(gulp.dest('./'));
 });
 

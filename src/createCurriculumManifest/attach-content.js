@@ -8,24 +8,29 @@ var _ = require('lodash');
 var Q = require('q');
     Q.fs = require('q-io/fs');
 
-var fm = require('front-matter');
+var frontMatter = require('front-matter');
 var marked = require('marked');
 
 var parseMarkdown = function(str) {
     var parsed;
-    // Handles format errors in front matter markers
+
+
+    // Changes arbitrary -'d separators in the old thinkdown to three ---
+    str = str.replace(/\n\s*----+\s*\n/g, '\n---\n');
+
+    // Prepends --- to parse old thinkdown format as front matter
     if (!/---/.test(str.split('\n')[0])) {
         str = '---\n' + str;
-        str = str.replace('----------', '---');
     }
+
     // Extracts front matter and body
     try {
-        parsed = fm(str)
+        parsed = frontMatter(str);
     } catch(e) {
         // throws for improperly formatted yaml, see front matter from:
         //  Unit 4 of NODE-001
         //      Intermediate Node.js Deploying and Platforms as a Service
-        gutil.log(file.path, '\n', e.problem, e.stack);
+        throw new Error(e.problem, e.stack);
     }
     if(_.isObject(parsed)) {
         parsed.body = marked(parsed.body);
@@ -34,10 +39,22 @@ var parseMarkdown = function(str) {
     return _.isObject(parsed) ? parsed : new Error("Could not parse markdown");
 }
 
-module.exports = function(dir, nodes) {
-    var promises = _.map(nodes, function (node, index, list) {
+module.exports = function(options) {
+    var dirname = path.dirname(options.file.path);
+
+    return function(node) {
+        // Quits if not src attribute is present
+        if (_.isEmpty(node.src)) {
+            gutil.log(gutil.colors.yellow(
+                "Element", node.type, "has no src= attribute"
+            ));
+            return Q.when(true);
+        }
+
+        var _path = path.resolve(dirname, node.src);
+
         node.content = {};
-        var _path = path.resolve(dir, node.src);
+
         return Q.allSettled([
             Q.fs.read(path.resolve(_path, 'content.md'))
                 .then(parseMarkdown)
@@ -56,7 +73,5 @@ module.exports = function(dir, nodes) {
                     node.content.comprehension = str;
                 })
         ]);
-    });
-
-    return Q.allSettled(promises);
+    }
 }
