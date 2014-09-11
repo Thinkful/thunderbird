@@ -36,13 +36,13 @@ var parseMarkdown = function(str) {
     }
     if(_.isObject(parsed)) {
         parsed.body = marked(parsed.body);
-        parsed.body = fuckit_change_src_to_source(parsed.body);
+        parsed.body = fuckit_change_src_to_asset(parsed.body);
     }
 
     return _.isObject(parsed) ? parsed : new Error("Could not parse markdown");
 }
 
-var fuckit_change_src_to_source = function(html) {
+var fuckit_change_src_to_asset = function(html) {
     var $ = createDom(html);
     _.chain($('[src]'))
         .reject(function(el) {
