@@ -19,6 +19,7 @@
   "dependencies": {
     "front-matter": "^0.2.0",
     "glob": "^4.0.5",
+    "highlight.js": "^8.2.0",
     "js-beautify": "^1.5.1",
     "marked": "^0.3.2",
     "node-uuid": "^1.4.1",
