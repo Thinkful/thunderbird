@@ -10,12 +10,22 @@ var Q = require('q');
 
 var frontMatter = require('front-matter');
 var marked = require('marked');
+var hljs = require('highlight.js');
 
 var createDom = require('../create-dom');
 
+var renderer = new marked.Renderer();
+renderer.code = function(code, lang) {
+    var highlighted = hljs.highlightAuto(code);
+    return '<pre class="hljs">' + highlighted.value + '</pre>';
+}
+marked.setOptions({
+    renderer: renderer
+});
+
+
 var parseMarkdown = function(str) {
     var parsed;
-
 
     // Changes arbitrary -'d separators in the old thinkdown to three ---
     str = str.replace(/\n\s*----+\s*\n/g, '\n---\n');
