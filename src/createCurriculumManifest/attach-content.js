@@ -11,6 +11,8 @@ var Q = require('q');
 var frontMatter = require('front-matter');
 var marked = require('marked');
 
+var createDom = require('../create-dom');
+
 var parseMarkdown = function(str) {
     var parsed;
 
@@ -34,9 +36,23 @@ var parseMarkdown = function(str) {
     }
     if(_.isObject(parsed)) {
         parsed.body = marked(parsed.body);
+        parsed.body = fuckit_change_src_to_asset(parsed.body);
     }
 
     return _.isObject(parsed) ? parsed : new Error("Could not parse markdown");
+}
+
+var fuckit_change_src_to_asset = function(html) {
+    var $ = createDom(html);
+    _.chain($('[src]'))
+        .reject(function(el) {
+            return /^(https?)?:?\/\//i.test(el.getAttribute('src'));
+        })
+        .each(function(el) {
+            el.setAttribute('asset', el.getAttribute('src'));
+            el.removeAttribute('src');
+        });
+    return $('body').html();
 }
 
 module.exports = function(options) {

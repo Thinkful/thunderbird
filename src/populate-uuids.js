@@ -74,6 +74,8 @@ module.exports = function() {
             path: file.path,
             contents: new Buffer(xmlStr)
         }));
+        // gotta call done, sneaky …
+        done();
 
     });
 };
