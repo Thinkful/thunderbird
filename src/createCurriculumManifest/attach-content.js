@@ -20,8 +20,6 @@ renderer.code = function(code, lang) {
     return '<pre class="hljs">' + highlighted.value + '</pre>';
 }
 marked.setOptions({
-    sanitize: true,
-    smartLists: true,
     renderer: renderer
 });
 
