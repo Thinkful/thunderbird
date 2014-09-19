@@ -25,19 +25,20 @@ module.exports = function(options) {
             return done(new PluginError(PLUGIN_NAME, 'Streaming not supported'));
         }
 
+        var rootDir = path.dirname(file.path);
+
         var operationsPerNode = [
             // Attaches metadata from structure.xml,
             // including legacy structures / intro / contents etc
-            setMetadata(),
+            setMetadata(rootDir),
             // Attaches metadata from content.md files
             // Attaches course body from content.md, content.html
             // Attaches comprehension content from comprehension.md
-            attachContent({"file": file})
+            attachContent(rootDir)
         ];
 
         var treePromise = buildTree(file, operationsPerNode);
 
-        var rootDirectory = path.dirname(file.path);
 
         /*
             TODO include root node in content selection, excluding is a
@@ -47,14 +48,15 @@ module.exports = function(options) {
         // then we're done! Saves the file.
         var stream = this;
         treePromise.then(function(treeRoot) {
+            gutil.log("Tree promise completed.");
             stream.push(new gutil.File({
-              path: path.resolve(rootDirectory, options.filename),
+              path: path.resolve(rootDir, options.filename),
               contents: new Buffer(JSON.stringify(treeRoot.toJSON(), null, 4))
             }));
 
             done();
         }, function() {
-            gutil.log.info("Tree building error! ");
+            gutil.log("Tree building error!");
             done(new PluginError(PLUGIN_NAME, 'Error building tree'));
         });
     });
