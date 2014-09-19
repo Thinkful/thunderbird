@@ -16,7 +16,7 @@ collectAttributes = function(element) {
     }, {});
 }
 
-_setMetadata_legacy = function(node) {
+setMetadataLegacy = function(node) {
     var $ = node.root.$;
     var $element = $(node.element);
 
@@ -48,18 +48,30 @@ _setMetadata_legacy = function(node) {
 /*
  * Assigns element attributes to the DocumentNode
  */
-var _setMetadata = function(node) {
+var setMetadataFromStructure = function(node) {
     var meta = collectAttributes(node.element);
     _.defaults(node, meta);
+}
+
+/*
+ * Assigns metadata from the parsed frontMatter object
+ */
+var setMetadataFromMarkdown = function(node, attributes) {
+    if (attributes.type) {
+        // Convert internal types to assignment_type, lesson_type, etc
+        attributes[node.type + "_type"] = attributes.type;
+        delete attributes.type;
+    }
+    _.defaults(node, attributes);
 }
 
 var setMetadata = module.exports = function(rootDir) {
     return function (node) {
         /* Legacy methods for storing metadata */
-        _setMetadata_legacy(node);
+        setMetadataLegacy(node);
 
         /* Metadata from xml element attributes */
-        _setMetadata(node);
+        setMetadataFromStructure(node);
 
         if (_.isEmpty(node.src)) {
             gutil.log(gutil.colors.yellow(
@@ -75,7 +87,7 @@ var setMetadata = module.exports = function(rootDir) {
             Q.fs.read(path.resolve(_path, 'content.md'))
             .then(parseMarkdown)
             .then(function(parsed) {
-                _.defaults(node, parsed.attributes);
+                setMetadataFromMarkdown(node, parsed.attributes);
             })
         ]);
     }
