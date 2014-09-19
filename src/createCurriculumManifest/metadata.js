@@ -5,13 +5,10 @@ var Q = require('q');
  * Creates an object from HTML element attributes
  */
 collectAttributes = function(element) {
-    return _( element.attributes ).toArray()
-        // Returns array of (property, value) tuples from
-        //  (attr.name, attr.value)
-        .map(function(attr){ return [attr.name, attr.value] })
-        // Joins [(property, value), …] into {property: value, …}
-        .zipObject()
-    .value();
+    return _( element.attributes ).toArray().reduce(function (obj, attr) {
+        obj[attr.name] = attr.value;
+        return obj;
+    }, {});
 }
 
 _setMetadata_legacy = function(node, options) {
