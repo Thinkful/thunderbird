@@ -1,3 +1,5 @@
+"use strict";
+
 var _ = require('lodash');
 var Q = require('q');
 var path = require('path');
@@ -9,14 +11,14 @@ var parseMarkdown = require('./parse-markdown');
 /*
  * Creates an object from HTML element attributes
  */
-collectAttributes = function(element) {
+var collectAttributes = function(element) {
     return _( element.attributes ).toArray().reduce(function (obj, attr) {
         obj[attr.name] = attr.value;
         return obj;
     }, {});
 }
 
-setMetadataLegacy = function(node) {
+var setMetadataLegacy = function(node) {
     var $ = node.root.$;
     var $element = $(node.element);
 
@@ -57,12 +59,14 @@ var setMetadataFromStructure = function(node) {
  * Assigns metadata from the parsed frontMatter object
  */
 var setMetadataFromMarkdown = function(node, attributes) {
-    if (attributes.type) {
-        // Convert internal types to assignment_type, lesson_type, etc
-        attributes[node.type + "_type"] = attributes.type;
-        delete attributes.type;
-    }
     _.defaults(node, attributes);
+
+    /* TODO(olex): This is the only case where markdown overrides structure.xml
+     *             Switch to <project> tags instead of <assignment>
+     */
+    if (/project/.test(attributes.type)) {
+        node.type = "project";
+    }
 }
 
 var setMetadata = module.exports = function(rootDir) {
