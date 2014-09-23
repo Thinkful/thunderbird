@@ -1,20 +1,24 @@
+"use strict";
+
 var _ = require('lodash');
 var Q = require('q');
+var path = require('path');
+
+var gutil = require('gulp-util');
+
+var parseMarkdown = require('./parse-markdown');
 
 /*
  * Creates an object from HTML element attributes
  */
-collectAttributes = function(element) {
-    return _( element.attributes ).toArray()
-        // Returns array of (property, value) tuples from
-        //  (attr.name, attr.value)
-        .map(function(attr){ return [attr.name, attr.value] })
-        // Joins [(property, value), …] into {property: value, …}
-        .zipObject()
-    .value();
+var collectAttributes = function(element) {
+    return _( element.attributes ).toArray().reduce(function (obj, attr) {
+        obj[attr.name] = attr.value;
+        return obj;
+    }, {});
 }
 
-_setMetadata_legacy = function(node, options) {
+var setMetadataLegacy = function(node) {
     var $ = node.root.$;
     var $element = $(node.element);
 
@@ -46,21 +50,50 @@ _setMetadata_legacy = function(node, options) {
 /*
  * Assigns element attributes to the DocumentNode
  */
-var _setMetadata = function(node, options) {
+var setMetadataFromStructure = function(node) {
     var meta = collectAttributes(node.element);
     _.defaults(node, meta);
 }
 
-var setMetadata = module.exports = function(options) {
+/*
+ * Assigns metadata from the parsed frontMatter object
+ */
+var setMetadataFromMarkdown = function(node, attributes) {
+    _.defaults(node, attributes);
+
+    /* TODO(olex): This is the only case where markdown overrides structure.xml
+     *             Switch to <project> tags instead of <assignment>
+     */
+    if (/project/.test(attributes.type)) {
+        node.type = "project";
+    }
+}
+
+var setMetadata = module.exports = function(rootDir) {
     return function (node) {
         /* Legacy methods for storing metadata */
-        _setMetadata_legacy(node, options);
+        setMetadataLegacy(node);
 
         /* Metadata from xml element attributes */
-        _setMetadata(node, options);
+        setMetadataFromStructure(node);
 
-        return Q.when(1);
+        if (_.isEmpty(node.src)) {
+            gutil.log(gutil.colors.yellow(
+                "Element", node.type, "has no src= attribute"
+            ));
+            return Q.when(true);
+        }
 
+        var _path = path.resolve(rootDir, node.src);
+
+        /* Metadata from markdown */
+        return Q.allSettled([
+            Q.fs.read(path.resolve(_path, 'content.md'))
+            .then(parseMarkdown)
+            .then(function(parsed) {
+                setMetadataFromMarkdown(node, parsed.attributes);
+            })
+        ]);
     }
 };
 
