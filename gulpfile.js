@@ -9,7 +9,7 @@ var populateUUIDs = require('./src/populate-uuids');
 /* Configuration */
 var argv = require('yargs').argv;
 var paths = {
-    build: (argv.build || ".build/"),
+    build: (argv.build || "t-build"),
     source: (argv.source || "test")
 };
 
@@ -27,7 +27,7 @@ gulp.task('assets', function() {
         }))
         // .pipe(debug({title: "ASSET"}))
         .pipe(flatten())
-        .pipe(gulp.dest(paths.build + "assets"));
+        .pipe(gulp.dest(paths.build + "/assets"));
     }
 });
 
