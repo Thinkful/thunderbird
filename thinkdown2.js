@@ -1,29 +1,30 @@
 #! /usr/bin/env node
 
 var path = require('path');
-var args = require('yargs').argv;
+var argv = require('yargs').argv;
 var spawn = require('child_process').spawn;
 var StringDecoder = require('string_decoder').StringDecoder;
 
 var gulpPath = path.resolve(__dirname)
 
 /* Configuration */
-var build = args.build || args.curric;
+var build = argv.build || argv.curric;
 if (!build) {
     console.error("Warning: No build directory specified with --build (using 't-build').");
     build = "t-build"
 }
-var assets = args.assets || "false";
-var gulpOpts = [
+var assets = argv.assets || "false";
+var gulpOptions = [
     '--cwd=' + gulpPath,
     '--source=' + path.resolve(process.cwd()),
     '--build=' + path.resolve(build)
 ];
-if (args.skipAssets) {
-    gulpOpts.append("--skipAssets");
+
+if (argv["skip-assets"]) {
+    gulpOptions.push("--skip-assets");
 }
 
-var gulp = spawn('gulp', gulpOpts, {
+var gulp = spawn('gulp', gulpOptions, {
     cwd: gulpPath
 });
 

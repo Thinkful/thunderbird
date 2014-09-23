@@ -18,7 +18,7 @@ var assetsRegex = new RegExp(".*[.](" + extensions.join("|") + ")$");
 
 /* Collects assets folders into one common assets folder */
 gulp.task('assets', function() {
-    if (argv.skipAssets) {
+    if (argv["skip-assets"]) {
        return;
     } else {
        return gulp.src(paths.source + "/**/*")
@@ -26,7 +26,6 @@ gulp.task('assets', function() {
             return assetsRegex.test(file.path);
         }))
         // .pipe(debug({title: "ASSET"}))
-        .pipe(flatten())
         .pipe(gulp.dest(paths.build + "/assets"));
     }
 });
