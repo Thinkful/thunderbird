@@ -1,3 +1,4 @@
+var del = require('del');
 var gulp = require('gulp');
 var filter = require('gulp-filter');
 var debug = require('gulp-debug');
@@ -17,13 +18,17 @@ var assetsRegex = new RegExp(".*[.](" + extensions.join("|") + ")$");
 
 /* Collects assets folders into one common assets folder */
 gulp.task('assets', function() {
-    return gulp.src(paths.source + "/**/*")
+    if (argv.skipAssets) {
+       return;
+    } else {
+       return gulp.src(paths.source + "/**/*")
         .pipe(filter(function(file) {
             return assetsRegex.test(file.path);
         }))
         // .pipe(debug({title: "ASSET"}))
         .pipe(flatten())
         .pipe(gulp.dest(paths.build + "assets"));
+    }
 });
 
 /* Builds curriculum.json from structure and contents */
@@ -37,9 +42,10 @@ gulp.task('tree', function() {
         .pipe(gulp.dest(paths.build));
 });
 
+gulp.task('clean', del.bind(null, [paths.build]));
+
 gulp.task('default', [
     'tree',
     'assets'
 ]);
-
 

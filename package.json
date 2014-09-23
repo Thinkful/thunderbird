@@ -3,6 +3,10 @@
   "version": "0.0.0",
   "description": "Create curricula suitable for Eagle to consume.",
   "main": "index.js",
+  "preferGlobal": "true",
+  "bin": {
+    "thinkdown2": "thinkdown2.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -34,6 +38,7 @@
     "gulp-flatten": "0.0.3",
     "yargs": "^1.3.1",
     "gulp-filter": "^1.0.2",
-    "gulp-debug": "^1.0.1"
+    "gulp-debug": "^1.0.1",
+    "del": "^0.1.3"
   }
 }
