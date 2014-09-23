@@ -8,35 +8,33 @@ var populateUUIDs = require('./src/populate-uuids');
 /* Configuration */
 var argv = require('yargs').argv;
 var paths = {
-    buildDir: (argv.buildDir || ".build/"),
-    sourceGlob: "test"
+    build: (argv.build || ".build/"),
+    source: (argv.source || "test")
 };
 
-var assetsExtensions = [
-    "svg", "png", "gif", "tiff", "mp3", "ogg", "jpg", "jpeg"];
-var assetsRegex = new RegExp(".*\.(" + assetsExtensions.join("|") + ")$");
+var extensions = require("./asset-extensions")
+var assetsRegex = new RegExp(".*[.](" + extensions.join("|") + ")$");
 
 /* Collects assets folders into one common assets folder */
 gulp.task('assets', function() {
-    console.log("Asssets filter: ", assetsRegex);
-
-    return gulp.src(paths.sourceGlob + "/**/*")
+    return gulp.src(paths.source + "/**/*")
         .pipe(filter(function(file) {
             return assetsRegex.test(file.path);
         }))
         // .pipe(debug({title: "ASSET"}))
         .pipe(flatten())
-        .pipe(gulp.dest(paths.buildDir + "assets"));
+        .pipe(gulp.dest(paths.build + "assets"));
 });
 
 /* Builds curriculum.json from structure and contents */
 gulp.task('tree', function() {
-    return gulp.src(paths.sourceGlob + '/structure.xml')
+    return gulp.src(paths.source + '/structure.xml')
         .pipe(populateUUIDs())
         .pipe(createCurriculumManifest({
           filename: "curriculum.json"
         }))
-        .pipe(gulp.dest(paths.buildDir));
+        .pipe(flatten())
+        .pipe(gulp.dest(paths.build));
 });
 
 gulp.task('default', [
