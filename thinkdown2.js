@@ -33,7 +33,7 @@ gulp.stdout.on('data', function(data) {
     process.stdout.write(decoder.write(data) + decoder.end());
 });
 gulp.stdout.on('end', function(data) {
-    process.stdout.write(data ? decoder.write(data) + decoder.end() : " - end - ");
+    process.stdout.write(data ? decoder.write(data) + decoder.end() : "****** Thinkdown gulp finished.\n");
 });
 
 gulp.on('exit', function(code) {
