@@ -85,6 +85,7 @@ var setMetadata = module.exports = function(rootDir) {
         }
 
         var _path = path.resolve(rootDir, node.src);
+        console.log("METADATA ROOTDIR:: " + _path);
 
         /* Metadata from markdown */
         return Q.allSettled([

@@ -17,6 +17,7 @@ module.exports = function(rootDir) {
         }
 
         var _path = path.resolve(rootDir, node.src);
+        console.log("CONTENT ROOTDIR:: " + _path);
 
         node.content = {};
 
