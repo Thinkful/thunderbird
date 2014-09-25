@@ -1,7 +1,7 @@
 var del = require('del');
 var gulp = require('gulp');
-var filter = require('gulp-filter');
 var debug = require('gulp-debug');
+var filter = require('gulp-filter');
 var flatten = require('gulp-flatten');
 var createCurriculumManifest = require('./src/createCurriculumManifest');
 var populateUUIDs = require('./src/populate-uuids');
@@ -23,9 +23,10 @@ gulp.task('assets', function() {
     } else {
        return gulp.src(paths.source + "/**/*")
         .pipe(filter(function(file) {
+            // ./content/1.1.1_Assignment_Name/content.md ->
+            // -- X -- md is not an acceptable extension, filtered out
             return assetsRegex.test(file.path);
         }))
-        // .pipe(debug({title: "ASSET"}))
         .pipe(gulp.dest(paths.build + "/assets"));
     }
 });
