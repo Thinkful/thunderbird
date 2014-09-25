@@ -17,13 +17,25 @@ module.exports = function(rootDir) {
         }
 
         var _path = path.resolve(rootDir, node.src);
-        console.log("CONTENT ROOTDIR:: " + _path);
+        var markdownPath = path.resolve(_path, 'content.md');
 
         node.content = {};
-
         return Q.allSettled([
-            Q.fs.read(path.resolve(_path, 'content.md'))
+
+            Q.fs.read(markdownPath)
                 .then(parseMarkdown)
+                .catch(function(err) {
+                    if (err.code == "ENOENT") {
+                        gutil.log(
+                            "Warning:",
+                            gutil.colors.yellow(markdownPath),
+                            "not found");
+                        return;
+                    }
+                    gutil.log(gutil.colors.red("[Thinkdown Failed!]"),
+                              "Error parsing", markdownPath);
+                    process.exit(1);
+                })
                 .then(function(parsed) {
                     node.content.body = parsed.body;
                 }),
@@ -35,7 +47,9 @@ module.exports = function(rootDir) {
 
             Q.fs.read(path.resolve(_path, 'comprehension.md'))
                 .then(function(str) {
-                    node.content.comprehension = str;
+                    if (!_.isEmpty(str)) {
+                        strnode.content.comprehension = str;
+                    }
                 })
         ]);
     }
