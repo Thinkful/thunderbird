@@ -47,10 +47,13 @@ module.exports = function(str) {
         //  Unit 4 of NODE-001
         //      Intermediate Node.js Deploying and Platforms as a Service
         //
-        console.log("Front matter error: ", e.problem, "\n");
-        console.log((e.problem_mark.buffer).split("\n")[e.problem_mark.line]);
-        console.log(Array(e.problem_mark.column + 1).join(" ") + "^");
-        throw new Error();
+        buffer = ["Front matter error: ",
+                  e.problem,
+                  (e.problem_mark.buffer).split("\n")[e.problem_mark.line],
+                  Array(e.problem_mark.column + 1).join(" ") + "^"
+                 ].join("\n")
+        e.front_matter_error = buffer;
+        throw e;
     }
 
     parsed.body = marked(parsed.body);

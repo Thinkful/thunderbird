@@ -25,16 +25,25 @@ module.exports = function(rootDir) {
             Q.fs.read(markdownPath)
                 .then(parseMarkdown)
                 .catch(function(err) {
-                    if (err.code == "ENOENT") {
+                    if (err.code === "ENOENT") {
                         gutil.log(
                             "Warning:",
                             gutil.colors.yellow(markdownPath),
                             "not found");
                         return;
                     }
-                    gutil.log(gutil.colors.red("[Thinkdown Failed!]"),
-                              "Error parsing", markdownPath);
-                    process.exit(1);
+                    if (err.front_matter_error) {
+                        gutil.log(gutil.colors.bgRed("!Thinkdown Failed!    ¡"));
+                        gutil.log(gutil.colors.bgRed("!  Thinkdown Failed!  ¡"));
+                        gutil.log(gutil.colors.bgRed("!    Thinkdown Failed!¡"));
+                        gutil.log("Error parsing front matter in:");
+                        gutil.log(gutil.colors.yellow(markdownPath));
+                        gutil.log(err.front_matter_error);
+                        gutil.log("Exiting.");
+                        process.exit(1);
+                    }
+                    gutil.log(gutil.colors.yellow('Unrecognized error!'));
+                    gutil.log(err);
                 })
                 .then(function(parsed) {
                     node.content.body = parsed.body;
