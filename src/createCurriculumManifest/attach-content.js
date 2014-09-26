@@ -17,13 +17,34 @@ module.exports = function(rootDir) {
         }
 
         var _path = path.resolve(rootDir, node.src);
-        console.log("CONTENT ROOTDIR:: " + _path);
+        var markdownPath = path.resolve(_path, 'content.md');
 
         node.content = {};
-
         return Q.allSettled([
-            Q.fs.read(path.resolve(_path, 'content.md'))
+
+            Q.fs.read(markdownPath)
                 .then(parseMarkdown)
+                .catch(function(err) {
+                    if (err.code === "ENOENT") {
+                        gutil.log(
+                            "Warning:",
+                            gutil.colors.yellow(markdownPath),
+                            "not found");
+                        return;
+                    }
+                    if (err.front_matter_error) {
+                        gutil.log(gutil.colors.bgRed("!Thinkdown Failed!    ¡"));
+                        gutil.log(gutil.colors.bgRed("!  Thinkdown Failed!  ¡"));
+                        gutil.log(gutil.colors.bgRed("!    Thinkdown Failed!¡"));
+                        gutil.log("Error parsing front matter in:");
+                        gutil.log(gutil.colors.yellow(markdownPath));
+                        gutil.log(err.front_matter_error);
+                        gutil.log("Exiting.");
+                        process.exit(1);
+                    }
+                    gutil.log(gutil.colors.yellow('Unrecognized error!'));
+                    gutil.log(err);
+                })
                 .then(function(parsed) {
                     node.content.body = parsed.body;
                 }),
@@ -35,7 +56,9 @@ module.exports = function(rootDir) {
 
             Q.fs.read(path.resolve(_path, 'comprehension.md'))
                 .then(function(str) {
-                    node.content.comprehension = str;
+                    if (!_.isEmpty(str)) {
+                        strnode.content.comprehension = str;
+                    }
                 })
         ]);
     }

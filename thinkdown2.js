@@ -25,6 +25,7 @@ if (!source) {
 }
 
 var gulpOptions = [
+    '--color',
     '--cwd=' + gulpPath,
     '--source=' + path.resolve(source),
     '--build=' + path.resolve(build)

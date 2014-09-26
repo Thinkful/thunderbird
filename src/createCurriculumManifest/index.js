@@ -26,7 +26,6 @@ module.exports = function(options) {
         }
 
         var rootDir = path.dirname(file.path);
-        console.log("TASK ROOTDIR:: " + rootDir);
 
         var operationsPerNode = [
             // Attaches metadata from structure.xml,
