@@ -46,12 +46,17 @@ module.exports = function(str) {
         // throws for improperly formatted yaml, see front matter from:
         //  Unit 4 of NODE-001
         //      Intermediate Node.js Deploying and Platforms as a Service
-        throw new Error(e.problem, e.stack);
-    }
-    if(_.isObject(parsed)) {
-        parsed.body = marked(parsed.body);
-        parsed.body = fuckit_change_src_to_asset(parsed.body);
+        //
+        buffer = ["Front matter error: ",
+                  e.problem,
+                  (e.problem_mark.buffer).split("\n")[e.problem_mark.line],
+                  Array(e.problem_mark.column + 1).join(" ") + "^"
+                 ].join("\n")
+        e.front_matter_error = buffer;
+        throw e;
     }
 
-    return _.isObject(parsed) ? parsed : new Error("Could not parse markdown");
+    parsed.body = marked(parsed.body);
+    parsed.body = fuckit_change_src_to_asset(parsed.body);
+    return parsed;
 }
