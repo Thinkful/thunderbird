@@ -47,7 +47,7 @@ module.exports = function(str) {
         //  Unit 4 of NODE-001
         //      Intermediate Node.js Deploying and Platforms as a Service
         //
-        buffer = ["Front matter error: ",
+        var buffer = ["Front matter error: ",
                   e.problem,
                   (e.problem_mark.buffer).split("\n")[e.problem_mark.line],
                   Array(e.problem_mark.column + 1).join(" ") + "^"
