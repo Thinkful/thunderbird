@@ -7,9 +7,12 @@ var hljs = require('highlight.js');
 var createDom = require('../create-dom');
 
 var renderer = new marked.Renderer();
+renderer.codespan = function(code) {
+    return '<code ng-non-bindable>' + code + '</code>';
+}
 renderer.code = function(code, lang) {
     var highlighted = hljs.highlightAuto(code);
-    return '<pre class="hljs">' + highlighted.value + '</pre>';
+    return '<pre class="hljs" ng-non-bindable>' + highlighted.value + '</pre>';
 }
 marked.setOptions({
     renderer: renderer
