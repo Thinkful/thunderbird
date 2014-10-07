@@ -28,7 +28,8 @@ module.exports = function(rootDir) {
                     if (err.code === "ENOENT") {
                         gutil.log(
                             "Warning:",
-                            gutil.colors.yellow(markdownPath),
+                            gutil.colors.yellow(
+                                markdownPath.replace(rootDir, '.')),
                             "not found");
                         return;
                     }
