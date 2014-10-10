@@ -1,5 +1,6 @@
 var del = require('del');
 var gulp = require('gulp');
+var gutil = require('gulp-util');
 var debug = require('gulp-debug');
 var filter = require('gulp-filter');
 var flatten = require('gulp-flatten');
@@ -31,10 +32,19 @@ gulp.task('assets', function() {
     }
 });
 
+gulp.task('uuids', function() {
+    return gulp.src(paths.source + '/structure.xml')
+        .pipe(populateUUIDs({
+            strict: argv.strictuuids || false
+        }))
+        .pipe(flatten())
+        .pipe(gulp.dest(paths.source))
+});
+
 /* Builds curriculum.json from structure and contents */
 gulp.task('tree', function() {
     return gulp.src(paths.source + '/structure.xml')
-        .pipe(populateUUIDs())
+        .pipe(populateUUIDs({ strict: false })
         .pipe(createCurriculumManifest({
           filename: "curriculum.json"
         }))
@@ -42,9 +52,16 @@ gulp.task('tree', function() {
         .pipe(gulp.dest(paths.build));
 });
 
+gulp.task('info', function() {
+    gutil.log("Source path:", gutil.colors.green(paths.source));
+    gutil.log("Build path:", gutil.colors.green(paths.build));
+});
+
 gulp.task('clean', del.bind(null, [paths.build]));
 
 gulp.task('default', [
+    'info',
+    'uuids',
     'tree',
     'assets'
 ]);
