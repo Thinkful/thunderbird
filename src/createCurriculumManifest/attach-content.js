@@ -32,9 +32,9 @@ module.exports = function(rootDir) {
                         return;
                     }
                     if (err.front_matter_error) {
-                        gutil.log(gutil.colors.bgRed("!Thinkdown Failed!    ¡"));
-                        gutil.log(gutil.colors.bgRed("!  Thinkdown Failed!  ¡"));
-                        gutil.log(gutil.colors.bgRed("!    Thinkdown Failed!¡"));
+                        gutil.log(gutil.colors.bgRed(" ☢ Thinkdown Failed!    ☢ "));
+                        gutil.log(gutil.colors.bgRed(" ☢   Thinkdown Failed!  ☢ "));
+                        gutil.log(gutil.colors.bgRed(" ☢     Thinkdown Failed!☢ "));
                         gutil.log("Error parsing front matter in:");
                         gutil.log(gutil.colors.yellow(markdownPath));
                         gutil.log(err.front_matter_error);

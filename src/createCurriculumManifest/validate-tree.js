@@ -26,9 +26,9 @@ var validateNode = function(node) {
     };
 
     // Warn in case there is no uuid
-    // if (_.isEmpty(node.root.$(node.element).attr("uuid")) && node.type != "course") {
-        // gutil.log("Warning: No uuid on " + gutil.colors.red(node.type) +".");
-    // };
+    if (_.isEmpty(node.root.$(node.element).attr("uuid")) && node.type != "course") {
+        gutil.log("Warning: No uuid on " + gutil.colors.red(node.type) +".");
+    };
 
     return node;
 }

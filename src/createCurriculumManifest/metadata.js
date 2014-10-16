@@ -83,9 +83,8 @@ var setMetadata = module.exports = function(rootDir) {
         setMetadataFromStructure(node);
 
         if (_.isEmpty(node.src)) {
-            gutil.log(gutil.colors.yellow(
-                "Element", node.type, "has no src= attribute"
-            ));
+            gutil.log("Warning: Element", gutil.colors.yellow(node.type),
+                "has no src= attribute");
             return Q.when(true);
         }
 

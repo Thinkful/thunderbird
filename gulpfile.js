@@ -44,7 +44,7 @@ gulp.task('uuids', function() {
 /* Builds curriculum.json from structure and contents */
 gulp.task('tree', function() {
     return gulp.src(paths.source + '/structure.xml')
-        .pipe(populateUUIDs({ strict: false })
+        .pipe(populateUUIDs({ strict: false }))
         .pipe(createCurriculumManifest({
           filename: "curriculum.json"
         }))
