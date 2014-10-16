@@ -22,13 +22,14 @@ var uuidNodeWhitelist = [
     "assignment"
 ];
 
+function UUIDNotFoundException() {}
 
 /**
  * Assigns UUIDs where missing to an XML string
  * @param  {String} xmlStr The xml contents to ID
  * @return {String}        A string with the newly generated IDs
  */
-var populate = function (xmlStr) {
+var populate = function (xmlStr, options) {
     var $ = createDOM(xmlStr);
 
     var existingUUIDs = _.map($('[uuid]'), function(el) {
@@ -40,16 +41,29 @@ var populate = function (xmlStr) {
     }
 
     var node = getNextNode();
-    while (node.length > 0) {
-        var uid = UUID.v1();
-        // If there is a collision with the existing UUIDs, retry
-        if (_.indexOf(existingUUIDs, uid) != -1) {
-            continue;
-        }
+    var uid;
 
-        node.attr("uuid", uid);
-        existingUUIDs.push(uid);
-        node = getNextNode();
+    if (options.strict === "true" || options.strict === true) {
+        if (node.length > 0) {
+            var e = new UUIDNotFoundException();
+            e.message = "Node " + node[0].nodeName + " with src=" + node.attr("src") +
+                        " does not have a UUID." +
+                        "\n >> Run thinkdown locally and commit the UUID changes " +
+                        "into the repository";
+            throw e;
+        }
+    } else {
+        while (node.length > 0) {
+            uid = UUID.v1();
+            // If there is a collision with the existing UUIDs, retry
+            if (_.indexOf(existingUUIDs, uid) != -1) {
+                continue;
+            }
+
+            node.attr("uuid", uid);
+            existingUUIDs.push(uid);
+            node = getNextNode();
+        }
     }
 
     xmlStr = $('body').html();
@@ -57,8 +71,10 @@ var populate = function (xmlStr) {
 }
 
 
-module.exports = function() {
+module.exports = function(options) {
     return through2.obj(function(file, enc, done) {
+        gutil.log("UUIDs populating on:", gutil.colors.green(file.path));
+
         if (file.isNull()) {
             return done(null, file);
         }
@@ -68,14 +84,18 @@ module.exports = function() {
         }
 
         var xmlStr = file.contents.toString('utf8');
-        xmlStr = populate(xmlStr);
+        try {
+            xmlStr = populate(xmlStr, options);
+        } catch (e ) {
+            gutil.log(gutil.colors.red('Strict UUID Check Failed: ' + e.message));
+            return done(new PluginError('gulp-populate-uuids', 'Strict UUID Check Failed.'));
+        }
 
         this.push(new gutil.File({
             path: file.path,
             contents: new Buffer(xmlStr)
         }));
-        // gotta call done, sneaky …
-        done();
 
+        done();
     });
 };
