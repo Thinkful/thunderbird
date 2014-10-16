@@ -10,7 +10,7 @@ var createDom = require('../create-dom');
  */
 var htmlTags =
     ("h1 h2 h3 h4 h5 h6 blockquote span p a ul ol nl li b i strong em sup "
-      + "code hr br div table thead object embed iframe "
+      + "code hr br div table thead object embed iframe aframe "
       + "section footer header "
       + "cite caption tbody tr th td pre figure img picture").split(" ");
 var customTags = ["assets"];
