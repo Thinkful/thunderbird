@@ -65,8 +65,10 @@ module.exports = function(options) {
             gutil.log("Tree building error!");
             done(new PluginError(PLUGIN_NAME, 'Error building tree'));
         }).catch(function(e) {
-            gutil.log("Tree building error!")
-            gutil.log(gutil.colors.red(e.stack))
+            gutil.log("Tree building error! *")
+            if (e.stack) {
+                gutil.log(gutil.colors.red(e.stack))
+            }
             done(new PluginError(PLUGIN_NAME, 'Error caught'));
         });
     });
