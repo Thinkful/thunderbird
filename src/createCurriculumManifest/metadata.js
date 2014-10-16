@@ -18,6 +18,11 @@ var collectAttributes = function(element) {
     }, {});
 }
 
+/* TODO(olex): Remove legacy methods of attaching metadata
+ * TODO(olex): Removing this would also allow removing passing
+ *             around the jQuery object from structure.xml in
+ *             the document tree.
+ */
 var setMetadataLegacy = function(node) {
     var $ = node.root.$;
     var $element = $(node.element);
