@@ -6,7 +6,7 @@ var PluginError = gutil.PluginError;
 
 var _ = require('lodash');
 
-var buildTree = require('./document-node');
+var buildTree = require('./build-tree');
 var attachContent = require('./attach-content');
 var setMetadata = require('./metadata');
 
@@ -31,6 +31,8 @@ module.exports = function(options) {
             // Attaches metadata from structure.xml,
             // including legacy structures / intro / contents etc
             setMetadata(rootDir),
+
+            // Requires metadata: src
             // Attaches metadata from content.md files
             // Attaches course body from content.md, content.html
             // Attaches comprehension content from comprehension.md
@@ -48,7 +50,7 @@ module.exports = function(options) {
         // then we're done! Saves the file.
         var stream = this;
         treePromise.then(function(treeRoot) {
-            gutil.log("Tree promise completed.");
+            gutil.log("Thinkdown compilation completed.");
             stream.push(new gutil.File({
               path: path.resolve(rootDir, options.filename),
               contents: new Buffer(JSON.stringify(treeRoot.toJSON(), null, 4))

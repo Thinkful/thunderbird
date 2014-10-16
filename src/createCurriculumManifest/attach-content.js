@@ -18,6 +18,7 @@ module.exports = function(rootDir) {
 
         var _path = path.resolve(rootDir, node.src);
         var markdownPath = path.resolve(_path, 'content.md');
+        var relPath = markdownPath.replace(rootDir, '.');
 
         node.content = {};
         return Q.allSettled([
@@ -26,11 +27,8 @@ module.exports = function(rootDir) {
                 .then(parseMarkdown)
                 .catch(function(err) {
                     if (err.code === "ENOENT") {
-                        gutil.log(
-                            "Warning:",
-                            gutil.colors.yellow(
-                                markdownPath.replace(rootDir, '.')),
-                            "not found");
+                        gutil.log("Warning:",
+                            gutil.colors.yellow(relPath), "not found");
                         return;
                     }
                     if (err.front_matter_error) {
