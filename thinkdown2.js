@@ -36,7 +36,7 @@ if (!source) {
     }
 }
 
-var strictuuids = argv.strictuuids || false;
+var strictuuids = argv.strictuuids || "false";
 
 var gulpOptions = [
     '--color',

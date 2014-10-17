@@ -1,10 +1,8 @@
 var through2 = require('through2');
-var gutil = require('gulp-util');
 
 var Q = require('q');
 
 var _ = require('lodash');
-var BeautifyHTML = require('js-beautify').html;
 
 var createDOM = require('../create-dom');
 

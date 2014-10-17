@@ -1,5 +1,6 @@
 var path = require('path');
 
+var utils = require('../utils');
 var gutil = require('gulp-util');
 
 var _ = require('lodash');
@@ -18,6 +19,7 @@ module.exports = function(rootDir) {
 
         var _path = path.resolve(rootDir, node.src);
         var markdownPath = path.resolve(_path, 'content.md');
+        var relPath = markdownPath.replace(rootDir, '.');
 
         node.content = {};
         return Q.allSettled([
@@ -26,22 +28,15 @@ module.exports = function(rootDir) {
                 .then(parseMarkdown)
                 .catch(function(err) {
                     if (err.code === "ENOENT") {
-                        gutil.log(
-                            "Warning:",
-                            gutil.colors.yellow(
-                                markdownPath.replace(rootDir, '.')),
-                            "not found");
+                        gutil.log("Warning:",
+                            gutil.colors.yellow(relPath), "not found");
                         return;
                     }
                     if (err.front_matter_error) {
-                        gutil.log(gutil.colors.bgRed("!Thinkdown Failed!    ¡"));
-                        gutil.log(gutil.colors.bgRed("!  Thinkdown Failed!  ¡"));
-                        gutil.log(gutil.colors.bgRed("!    Thinkdown Failed!¡"));
                         gutil.log("Error parsing front matter in:");
                         gutil.log(gutil.colors.yellow(markdownPath));
                         gutil.log(err.front_matter_error);
-                        gutil.log("Exiting.");
-                        process.exit(1);
+                        utils.fail();
                     }
                     gutil.log(gutil.colors.yellow('Unrecognized error!'));
                     gutil.log(err);
