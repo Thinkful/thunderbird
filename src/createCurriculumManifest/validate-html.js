@@ -2,8 +2,6 @@ var _ = require('lodash');
 var htmlparser = require('htmlparser2');
 var gutil = require('gulp-util');
 
-var createDom = require('../create-dom');
-
 /*
  * Allowed html tags in the final output of thinkdown.
  *

@@ -25,7 +25,7 @@ module.exports = function(rootDir) {
         return Q.allSettled([
 
             Q.fs.read(markdownPath)
-                .then(parseMarkdown)
+                .then(parseMarkdown({ "processMarkdown": true }))
                 .catch(function(err) {
                     if (err.code === "ENOENT") {
                         gutil.log("Warning:",

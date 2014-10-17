@@ -93,7 +93,7 @@ var setMetadata = module.exports = function(rootDir) {
         /* Metadata from markdown */
         return Q.allSettled([
             Q.fs.read(path.resolve(_path, 'content.md'))
-            .then(parseMarkdown)
+            .then(parseMarkdown({ "processMarkdown": false }))
             .then(function(parsed) {
                 setMetadataFromMarkdown(node, parsed.attributes);
             })
