@@ -34,31 +34,46 @@ var changeSrcToAsset = function($) {
         });
 }
 
+var createVideoIframe = function(source, $) {
+    var newElement = $.parseHTML("<div class='video-container'><div class='video-content'></div></div>");
+    var iframeHtml = "<iframe width='853' height='480' src='" + source +
+                     "' frameborder='0' allowfullscreen=''></iframe>";
+
+    $(newElement).children(".video-content").html(iframeHtml);
+    return newElement;
+}
+
 var replaceAframe = function($) {
     _.chain($('aframe[src]')).each(function(el) {
         gutil.log("Deprecation: Aframes like this will not be supported soon: <aframe src=\"" + el.getAttribute("src") + "\">");
-        var additionalAttrs = " frameborder='0' ";
 
-        if (el.getAttribute("src").match("youtube")) {
-            additionalAttrs = additionalAttrs + " width='853' height='480' ";
+        var replacementEl;
+        var source = el.getAttribute("src");
+        if (source.match(/(youtube|vimeo)/)) {
+            // Video
+            replacementEl = createVideoIframe(source, $);
+        } else {
+            replacementEl = $.parseHTML("<iframe src='" + source +
+                            "' frameborder='0' allowfullscreen=''></iframe>");
         }
-        var newIframe = "<iframe src='" + el.getAttribute("src") + "' " +
-                        additionalAttrs + "></iframe>";
-        $(el).replaceWith($.parseHTML(newIframe));
+
+        $(el).replaceWith(replacementEl);
     });
 }
 
 var replaceCssdeck = function($) {
     _.chain($('cssdeck[source]')).each(function(el) {
+        var pane = $(el).attr("pane") || "output,html,css,javascript";
         var cssDeckIframe = "<iframe height='440' src='//cssdeck.com/labs/embed/" +
-                         $(el).attr("source") +
-                         "/0/output,html,javascript' frameborder='0' allowfullscreen=''></iframe>";
+                         $(el).attr("source") + "/0/" + pane +
+                         "' frameborder='0'></iframe>";
 
         $(el).replaceWith($.parseHTML(cssDeckIframe));
     });
 
     if ($('cssdeck').length) {
-        gutil.log("Warning: There seems to be a rogue cssdeck tag:" + $('cssdeck').first());
+        gutil.log("Warning: There seems to be a rogue cssdeck tag:" +
+                  $('cssdeck').first());
     }
 }
 
@@ -67,17 +82,12 @@ var replaceCssdeck = function($) {
  */
 var replaceYoutube = function($) {
     $('youtube[source]').each(function(el) {
-        var newElement = $.parseHTML("<div class='video-container'><div class='video-content'></div></div>");
-        var iframeHtml = "<iframe width='853' height='480' src='" +
-                         $(el).attr("source") +
-                         "' frameborder='0' allowfullscreen=''></iframe>";
-
-        newElement.children(".video-content").html(iframeHtml);
-        $(el).replaceWith(newElement);
+        $(el).replaceWith(createVideoIframe($(el).attr("source"), $));
     });
 
     if ($('youtube').length) {
-        gutil.log("Warning: There seems to be a rogue youtube tag:" + $('youtube').first());
+        gutil.log("Warning: There seems to be a rogue youtube tag:" +
+                  $('youtube').first());
     }
 }
 
