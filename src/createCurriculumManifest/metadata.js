@@ -18,6 +18,11 @@ var collectAttributes = function(element) {
     }, {});
 }
 
+/* TODO(olex): Remove legacy methods of attaching metadata
+ * TODO(olex): Removing this would also allow removing passing
+ *             around the jQuery object from structure.xml in
+ *             the document tree.
+ */
 var setMetadataLegacy = function(node) {
     var $ = node.root.$;
     var $element = $(node.element);
@@ -78,9 +83,11 @@ var setMetadata = module.exports = function(rootDir) {
         setMetadataFromStructure(node);
 
         if (_.isEmpty(node.src)) {
-            gutil.log(gutil.colors.yellow(
-                "Element", node.type, "has no src= attribute"
-            ));
+            if (node.type != "course") {
+                // All elements except <course> should have an src attribute!
+                gutil.log("Warning: Element", gutil.colors.yellow(node.type),
+                    "has no src= attribute");
+            }
             return Q.when(true);
         }
 
@@ -89,7 +96,7 @@ var setMetadata = module.exports = function(rootDir) {
         /* Metadata from markdown */
         return Q.allSettled([
             Q.fs.read(path.resolve(_path, 'content.md'))
-            .then(parseMarkdown)
+            .then(parseMarkdown({ "processMarkdown": false }))
             .then(function(parsed) {
                 setMetadataFromMarkdown(node, parsed.attributes);
             })

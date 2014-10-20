@@ -6,9 +6,10 @@ var PluginError = gutil.PluginError;
 
 var _ = require('lodash');
 
-var buildTree = require('./document-node');
+var buildTree = require('./build-tree');
 var attachContent = require('./attach-content');
 var setMetadata = require('./metadata');
+var validateTree = require('./validate-tree');
 
 const PLUGIN_NAME = 'gulp-create-curriculum-manifest';
 
@@ -31,6 +32,7 @@ module.exports = function(options) {
             // Attaches metadata from structure.xml,
             // including legacy structures / intro / contents etc
             setMetadata(rootDir),
+
             // Attaches metadata from content.md files
             // Attaches course body from content.md, content.html
             // Attaches comprehension content from comprehension.md
@@ -45,10 +47,14 @@ module.exports = function(options) {
                 legacy concern needed to account for the inclusion of metadata
                 as part of the structure.xml
          */
-        // then we're done! Saves the file.
         var stream = this;
-        treePromise.then(function(treeRoot) {
-            gutil.log("Tree promise completed.");
+        treePromise
+        // validate the output!
+        .then(validateTree)
+
+        // then we're done! Save the curriculum.json file.
+        .then(function(treeRoot) {
+            gutil.log("Thinkdown compilation completed.");
             stream.push(new gutil.File({
               path: path.resolve(rootDir, options.filename),
               contents: new Buffer(JSON.stringify(treeRoot.toJSON(), null, 4))
@@ -58,6 +64,12 @@ module.exports = function(options) {
         }, function() {
             gutil.log("Tree building error!");
             done(new PluginError(PLUGIN_NAME, 'Error building tree'));
+        }).catch(function(e) {
+            gutil.log("Tree building error! *")
+            if (e.stack) {
+                gutil.log(gutil.colors.red(e.stack))
+            }
+            done(new PluginError(PLUGIN_NAME, 'Error caught'));
         });
     });
 };
