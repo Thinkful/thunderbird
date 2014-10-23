@@ -34,6 +34,10 @@ var changeSrcToAsset = function($) {
         });
 }
 
+var nonSpecificSrc = function(src) {
+    return src.replace(/^https?:/, "");
+}
+
 var createVideoIframe = function(source, $) {
     var newElement = $.parseHTML("<div class='video-container'><div class='video-content'></div></div>");
     var iframeHtml = "<iframe width='853' height='480' src='" + source +
@@ -51,9 +55,10 @@ var replaceAframe = function($) {
         var source = el.getAttribute("src");
         if (source.match(/(youtube|vimeo)/)) {
             // Video
-            replacementEl = createVideoIframe(source, $);
+            replacementEl = createVideoIframe(nonSpecificSrc(source), $);
         } else {
-            replacementEl = $.parseHTML("<iframe src='" + source +
+            replacementEl = $.parseHTML("<iframe src='" +
+                            nonSpecificSrc(source) +
                             "' frameborder='0' allowfullscreen=''></iframe>");
         }
 
@@ -64,7 +69,7 @@ var replaceAframe = function($) {
 var replaceCssdeck = function($) {
     _.chain($('cssdeck[source]')).each(function(el) {
         var pane = $(el).attr("pane") || "output,html,css,javascript";
-        var cssDeckIframe = "<iframe height='440' src='//cssdeck.com/labs/embed/" +
+        var cssDeckIframe = "<iframe height='440' src='http://cssdeck.com/labs/embed/" +
                          $(el).attr("source") + "/0/" + pane +
                          "' frameborder='0'></iframe>";
 
@@ -82,7 +87,8 @@ var replaceCssdeck = function($) {
  */
 var replaceYoutube = function($) {
     $('youtube[source]').each(function(el) {
-        $(el).replaceWith(createVideoIframe($(el).attr("source"), $));
+        $(el).replaceWith(
+            createVideoIframe(nonSpecificProtocol($(el).attr("source")), $));
     });
 
     if ($('youtube').length) {
