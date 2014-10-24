@@ -53,7 +53,7 @@ module.exports = function(rootDir) {
             Q.fs.read(path.resolve(_path, 'comprehension.md'))
                 .then(function(str) {
                     if (!_.isEmpty(str)) {
-                        strnode.content.comprehension = str;
+                        node.content.comprehension = str;
                     }
                 })
         ]);
