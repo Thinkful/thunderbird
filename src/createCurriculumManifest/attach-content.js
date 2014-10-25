@@ -51,9 +51,10 @@ module.exports = function(rootDir) {
                 }),
 
             Q.fs.read(path.resolve(_path, 'comprehension.md'))
-                .then(function(str) {
-                    if (!_.isEmpty(str)) {
-                        node.content.comprehension = str;
+                .then(parseMarkdown({ "processMarkdown": true }))
+                .then(function (str) {
+                    if (str && str.body) {
+                        node.content.comprehension = str.body;
                     }
                 })
         ]);
