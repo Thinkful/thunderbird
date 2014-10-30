@@ -20,10 +20,17 @@ if (argv["i-really-love-dogs"]) {
 }
 
 /* Configuration */
-var build = argv.build || argv.curric;
+var build;
+var local = argv.local;
+if (local) {
+    console.log("Build default for local builds: /usr/local/tmp/thinkdown-build");
+    build = "/usr/local/tmp/thinkdown-build";
+}
+
+build = argv.build || argv.curric || build;
 if (!build) {
     console.error("Caution: No build directory specified with --build (using 't-build').");
-    build = "t-build"
+    build = "t-build";
 }
 
 var source = argv.source;
