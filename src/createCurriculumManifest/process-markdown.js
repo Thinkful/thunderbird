@@ -86,7 +86,7 @@ var replaceCodepen = function($) {
         var embedUrl = "//codepen.io/team/thinkful/embed/" +
                        $(el).attr("source") +
                        "?height=440&theme-id=9607";
-        var codepenIframe = "<iframe height='440' src='" + embedUrl +
+        var codepenIframe = "<iframe height='444' src='" + embedUrl +
                             "' frameborder='0'></iframe>";
 
         $(el).replaceWith($.parseHTML(codepenIframe));
