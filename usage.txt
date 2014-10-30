@@ -19,6 +19,13 @@ thinkdown2 [--build=] [--source=] [--strictuuids] [--help]
   already have UUID's generated. --strictuuid's is ON when deploying a
   curriculum to master.
 
+--local
+
+  default: false
+  If --local is specified AND no --build dir is specified, the thinkdown build
+  is pushed into /usr/local/tmp/thinkdown-build, for local testing
+  [Work in Progress]
+
 --help
 
   Shows this help message and quits.

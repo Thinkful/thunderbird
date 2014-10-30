@@ -10,8 +10,23 @@ renderer.codespan = function(code) {
     return '<code ng-non-bindable>' + code + '</code>';
 }
 renderer.code = function(code, lang) {
-    var highlighted = hljs.highlightAuto(code);
-    return '<pre class="hljs" ng-non-bindable>' + highlighted.value + '</pre>';
+    var codeHtml = code;
+    try {
+        // if language is specified, and it is not "nohighlight",
+        // use hljs.highlight with that language.
+        if (lang) {
+            if (lang !== "nohighlight") {
+                codeHtml = hljs.highlight(lang.toLowerCase(), code).value;
+            }
+        } else {
+            // if no language is specified, use highlightAuto
+            codeHtml = hljs.highlightAuto(code).value;
+        }
+    } catch(e) {
+        gutil.log(gutil.colors.yellow("Highlight Error!"), e);
+    }
+
+    return '<pre class="hljs" ng-non-bindable>' + codeHtml + '</pre>';
 }
 
 marked.setOptions({
@@ -53,7 +68,7 @@ var replaceAframe = function($) {
 
         var replacementEl;
         var source = el.getAttribute("src");
-        if (source.match(/(youtube|vimeo)/)) {
+        if (source.match(/(youtu|vimeo)/)) {
             // Video
             replacementEl = createVideoIframe(nonSpecificSrc(source), $);
         } else {
@@ -66,19 +81,20 @@ var replaceAframe = function($) {
     });
 }
 
-var replaceCssdeck = function($) {
-    _.chain($('cssdeck[source]')).each(function(el) {
-        var pane = $(el).attr("pane") || "output,html,css,javascript";
-        var cssDeckIframe = "<iframe height='440' src='http://cssdeck.com/labs/embed/" +
-                         $(el).attr("source") + "/0/" + pane +
-                         "' frameborder='0'></iframe>";
+var replaceCodepen = function($) {
+    _.chain($('codepen[source]')).each(function(el) {
+        var embedUrl = "//codepen.io/team/thinkful/embed/" +
+                       $(el).attr("source") +
+                       "?height=440&theme-id=9607";
+        var codepenIframe = "<iframe height='444' src='" + embedUrl +
+                            "' frameborder='0'></iframe>";
 
-        $(el).replaceWith($.parseHTML(cssDeckIframe));
+        $(el).replaceWith($.parseHTML(codepenIframe));
     });
 
-    if ($('cssdeck').length) {
-        gutil.log("Warning: There seems to be a rogue cssdeck tag:" +
-                  $('cssdeck').first());
+    if ($('codepen').length) {
+        gutil.log("Warning: There seems to be a rogue codepen tag:" +
+                  $('codepen').first());
     }
 }
 
@@ -115,7 +131,7 @@ module.exports = function processMarkdown(markdown) {
 
     killStyles($);
     replaceYoutube($);
-    replaceCssdeck($);
+    replaceCodepen($);
     replaceAframe($);
 
     return $('body').html();
