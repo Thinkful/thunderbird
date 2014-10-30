@@ -21,6 +21,10 @@ module.exports = function(options) {
     return function parseMarkdown(str) {
         var parsed;
 
+        if (_.isEmpty(str)) {
+            return "";
+        }
+
         str = fixFrontMatterDelimiters(str);
 
         // Extracts front matter and body
