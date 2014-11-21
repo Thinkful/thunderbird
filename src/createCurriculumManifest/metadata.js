@@ -8,6 +8,8 @@ var gutil = require('gulp-util');
 
 var parseMarkdown = require('./parse-markdown');
 
+var yaml = require('js-yaml');
+
 /*
  * Creates an object from HTML element attributes
  */
@@ -99,6 +101,19 @@ var setMetadata = module.exports = function(rootDir) {
             .then(parseMarkdown({ "processMarkdown": false }))
             .then(function(parsed) {
                 setMetadataFromMarkdown(node, parsed.attributes);
+            })
+        ,
+            Q.fs.read(path.resolve(_path, 'marketing.yaml'))
+            .then(function (str) {
+                if (_.isEmpty(str)) {
+                    console.log("Empty marketing string");
+                    return "";
+                }
+                return yaml.load(str)
+            })
+            .then(function(attributes) {
+                console.log(attributes);
+                setMetadataFromMarkdown(node, { marketing: attributes });
             })
         ]);
     }

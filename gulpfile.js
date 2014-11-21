@@ -128,5 +128,5 @@ gulp.task('serve', [
 ])
 
 
-gulp.task('default', ['develop'] );
+gulp.task('default', ['build'] );
 

@@ -6,6 +6,8 @@ var PluginError = gutil.PluginError;
 
 var _ = require('lodash');
 
+var TT = require('thin-tree');
+
 var buildTree = require('./build-tree');
 var attachContent = require('./attach-content');
 var setMetadata = require('./metadata');
@@ -58,6 +60,24 @@ module.exports = function(options) {
             stream.push(new gutil.File({
               path: path.resolve(rootDir, options.filename),
               contents: new Buffer(JSON.stringify(treeRoot.toJSON(), null, 4))
+            }));
+
+
+
+            // Marketing.json
+            var market = new TT(treeRoot.toJSON());
+            _.each(market.preOrderTraverse(), function (n) {
+                delete n.content;
+                delete n.uuid;
+                delete n.parent;
+                delete n.root;
+                delete n.element;
+                delete n.getPromise;
+            });
+
+            stream.push(new gutil.File({
+              path: path.resolve(rootDir, "marketing.json"),
+              contents: new Buffer(JSON.stringify(market.toJSON(), null, 4))
             }));
 
             done();
