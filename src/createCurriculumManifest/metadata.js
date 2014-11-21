@@ -106,14 +106,13 @@ var setMetadata = module.exports = function(rootDir) {
             Q.fs.read(path.resolve(_path, 'marketing.yaml'))
             .then(function (str) {
                 if (_.isEmpty(str)) {
-                    console.log("Empty marketing string");
+                    gutil.log("Warning: No marketing.yaml file found");
                     return "";
                 }
                 return yaml.load(str)
             })
-            .then(function(attributes) {
-                console.log(attributes);
-                setMetadataFromMarkdown(node, { marketing: attributes });
+            .then(function(syllabus) {
+                setMetadataFromMarkdown(node, { syllabus: syllabus });
             })
         ]);
     }

@@ -57,16 +57,16 @@ module.exports = function(options) {
         // then we're done! Save the curriculum.json file.
         .then(function(treeRoot) {
             gutil.log("Thinkdown compilation completed.");
+
+            // curriculum.json
             stream.push(new gutil.File({
               path: path.resolve(rootDir, options.filename),
               contents: new Buffer(JSON.stringify(treeRoot.toJSON(), null, 4))
             }));
 
-
-
-            // Marketing.json
-            var market = new TT(treeRoot.toJSON());
-            _.each(market.preOrderTraverse(), function (n) {
+            // syllabus.json
+            var syllabus = new TT(treeRoot.toJSON());
+            _.each(syllabus.preOrderTraverse(), function (n) {
                 delete n.content;
                 delete n.uuid;
                 delete n.parent;
@@ -76,8 +76,8 @@ module.exports = function(options) {
             });
 
             stream.push(new gutil.File({
-              path: path.resolve(rootDir, "marketing.json"),
-              contents: new Buffer(JSON.stringify(market.toJSON(), null, 4))
+              path: path.resolve(rootDir, "syllabus.json"),
+              contents: new Buffer(JSON.stringify(syllabus.toJSON(), null, 4))
             }));
 
             done();
