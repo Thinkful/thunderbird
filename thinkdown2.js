@@ -46,6 +46,7 @@ if (!source) {
 var strictuuids = argv.strictuuids || "false";
 
 var gulpOptions = [
+    'develop',
     '--color',
     '--cwd=' + gulpPath,
     '--source=' + path.resolve(source),
