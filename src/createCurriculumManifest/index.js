@@ -58,26 +58,41 @@ module.exports = function(options) {
         .then(function(treeRoot) {
             gutil.log("Thinkdown compilation completed.");
 
+            var indent = process.env.target === 'production' ? 0 : 4;
+
             // curriculum.json
             stream.push(new gutil.File({
-              path: path.resolve(rootDir, options.filename),
-              contents: new Buffer(JSON.stringify(treeRoot.toJSON(), null, 4))
+                path: path.resolve(rootDir, options.filename),
+                contents: new Buffer(
+                    JSON.stringify(treeRoot.toJSON(), null, indent) + '\n'
+                )
             }));
 
             // syllabus.json
             var syllabus = new TT(treeRoot.toJSON());
             _.each(syllabus.preOrderTraverse(), function (n) {
+                delete n.author;
                 delete n.content;
+
+                delete n.src;
                 delete n.uuid;
+
+                if (_.isEmpty(n.children)) {
+                    delete n.children;
+                }
                 delete n.parent;
                 delete n.root;
+
                 delete n.element;
                 delete n.getPromise;
+
             });
 
             stream.push(new gutil.File({
-              path: path.resolve(rootDir, "syllabus.json"),
-              contents: new Buffer(JSON.stringify(syllabus.toJSON(), null, 4))
+                path: path.resolve(rootDir, "syllabus.json"),
+                contents: new Buffer(
+                    JSON.stringify(syllabus.toJSON(), null, indent) + "\n"
+                )
             }));
 
             done();
