@@ -11,7 +11,7 @@ var htmlTags =
       + "code hr br div table thead object embed iframe "
       + "section footer header "
       + "cite caption tbody tr th td pre figure img picture").split(" ");
-var customTags = ["assets"];
+var customTags = ["assets", "question", "answer"];
 var allowedTags = htmlTags.concat(customTags);
 
 /*
