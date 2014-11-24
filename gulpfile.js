@@ -11,10 +11,12 @@ var populateUUIDs = require('./src/populate-uuids');
 
 /* Configuration */
 var argv = require('yargs').argv;
+process.env.target = argv.target;
 var paths = {
     build: (argv.build || "t-build"),
     source: (argv.source || "test")
 };
+
 
 var extensions = require("./asset-extensions")
 var assetsRegex = new RegExp(".*[.](" + extensions.join("|") + ")$");

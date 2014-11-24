@@ -1,10 +1,12 @@
 #! /usr/bin/env node
-
 var fs = require('fs');
 var path = require('path');
-var argv = require('yargs').argv;
 var spawn = require('child_process').spawn;
 var StringDecoder = require('string_decoder').StringDecoder;
+
+var _ = require('lodash');
+var argv = require('yargs').argv;
+
 
 var gulpPath = path.resolve(__dirname)
 
@@ -51,7 +53,8 @@ var gulpOptions = [
     '--cwd=' + gulpPath,
     '--source=' + path.resolve(source),
     '--build=' + path.resolve(build),
-    '--strictuuids=' + strictuuids
+    '--strictuuids=' + strictuuids,
+    '--target=' + (_.indexOf(argv._, 'production') >= 0 ? 'production' : 'preview')
 ];
 
 if (argv["skip-assets"]) {
