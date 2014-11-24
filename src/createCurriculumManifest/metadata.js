@@ -98,22 +98,35 @@ var setMetadata = module.exports = function(rootDir) {
         /* Metadata from markdown */
         return Q.allSettled([
             Q.fs.read(path.resolve(_path, 'content.md'))
-            .then(parseMarkdown({ "processMarkdown": false }))
-            .then(function(parsed) {
-                setMetadataFromMarkdown(node, parsed.attributes);
-            })
+                .then(parseMarkdown({ "processMarkdown": false }))
+                .then(function(parsed) {
+                    setMetadataFromMarkdown(node, parsed.attributes);
+                })
         ,
+            Q.fs.read(path.resolve(_path, 'syllabus.yaml'))
+                .then(function (syllabus) {
+                    if (_.isEmpty(syllabus)) {
+                        gutil.log("Warning: No syllabus.yaml file found");
+                        return "";
+                    }
+                    syllabus = yaml.load(syllabus);
+                    if(!_.isEmpty(syllabus)) {
+                        _.merge(node, {'syllabus': syllabus});
+                    }
+                })
+        ,
+            // TODO rename all marketing.yaml files to syllabus.yaml
             Q.fs.read(path.resolve(_path, 'marketing.yaml'))
-            .then(function (str) {
-                if (_.isEmpty(str)) {
-                    gutil.log("Warning: No marketing.yaml file found");
-                    return "";
-                }
-                return yaml.load(str)
-            })
-            .then(function(syllabus) {
-                setMetadataFromMarkdown(node, { syllabus: syllabus });
-            })
+                .then(function (syllabus) {
+                    if (_.isEmpty(syllabus)) {
+                        gutil.log("Warning: No marketing.yaml file found");
+                        return "";
+                    }
+                    syllabus = yaml.load(syllabus);
+                    if(!_.isEmpty(syllabus)) {
+                        _.merge(node, {'syllabus': syllabus});
+                    }
+                })
         ]);
     }
 };

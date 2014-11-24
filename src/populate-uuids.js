@@ -32,6 +32,13 @@ function UUIDNotFoundException() {}
 var populate = function (xmlStr, options) {
     var $ = createDOM(xmlStr);
 
+    // Migration, remove onboarding tags from curricula
+    var $onboarding = $('onboarding')
+    if ($onboarding.length) {
+        $onboarding.remove();
+        gutil.log("Onboarding node removed from structure.xml");
+    }
+
     var existingUUIDs = _.map($('[uuid]'), function(el) {
         return el.getAttribute("uuid");
     });

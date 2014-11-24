@@ -8,7 +8,6 @@ var filenameFromKey = function(contentKey) {
     switch (contentKey) {
         case "body":            return "content.md"
         case "comprehension":   return "comprehension.md"
-        case "marketing":       return "marketing.yaml"
         case "raw":             return "content.html"
     }
 }
