@@ -109,22 +109,24 @@ var setMetadata = module.exports = function(rootDir) {
                         gutil.log("Warning: No syllabus.yaml file found");
                         return "";
                     }
-                    syllabus = yaml.load(syllabus);
-                    if(!_.isEmpty(syllabus)) {
+
+                    try {
+                        syllabus = yaml.safeLoad(syllabus);
                         _.merge(node, {'syllabus': syllabus});
-                    }
-                })
-        ,
-            // TODO rename all marketing.yaml files to syllabus.yaml
-            Q.fs.read(path.resolve(_path, 'marketing.yaml'))
-                .then(function (syllabus) {
-                    if (_.isEmpty(syllabus)) {
-                        gutil.log("Warning: No marketing.yaml file found");
-                        return "";
-                    }
-                    syllabus = yaml.load(syllabus);
-                    if(!_.isEmpty(syllabus)) {
-                        _.merge(node, {'syllabus': syllabus});
+
+                        gutil.log(
+                            gutil.colors.green('Syllabus'),
+                            'included for',
+                            gutil.colors.blue(path.basename(_path))
+                        );
+
+                    } catch (e) {
+                        gutil.log(
+                            gutil.colors.red('Syllabus'),
+                            'has invalid yaml, please correct:',
+                            gutil.colors.yellow(path.basename(_path))
+                        );
+                        gutil.log('\n\n', gutil.colors.yellow(e.message));
                     }
                 })
         ]);
