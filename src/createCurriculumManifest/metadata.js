@@ -83,7 +83,7 @@ function qRead (node, _path) {
     var metadata;
 
     metadata = QFS.read(path.resolve(_path, 'content.md'))
-    .then(parseMarkdown({ "processMarkdown": false, "origin": "metadata.js" }))
+    .then(parseMarkdown({ "processMarkdown": false }))
     .then(function(parsed) {
         var metadataYAML;
 

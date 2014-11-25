@@ -15,7 +15,7 @@ var fixFrontMatterDelimiters = function(str) {
 
 /* Higher order function that returns the markdown processor */
 module.exports = function(options) {
-    options = options || {};
+    options = _.assign({processMarkdown: true}, options);
 
     return function parseMarkdown(str) {
         var parsed;
