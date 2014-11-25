@@ -7,7 +7,7 @@ var gutil = require('gulp-util');
 var Q = require('q');
 var QFS = require("q-io/fs");
 
-var YAML = require('js-YAML');
+var YAML = require('js-yaml');
 
 var parseMarkdown = require('./parse-markdown');
 
