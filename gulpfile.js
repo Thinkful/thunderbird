@@ -14,7 +14,7 @@ var argv = require('yargs').argv;
 process.env.target = argv.target;
 var paths = {
     build: (argv.build || "t-build"),
-    source: (argv.source || process.cwd() + "/test/content")
+    source: (argv.source || "test")
 };
 
 

@@ -1,16 +1,14 @@
 "use strict";
-var path = require('path');
 
 var _ = require('lodash');
-var gutil = require('gulp-util');
-
 var Q = require('q');
-var QFS = require("q-io/fs");
+var path = require('path');
 
-var YAML = require('js-yaml');
+var gutil = require('gulp-util');
 
 var parseMarkdown = require('./parse-markdown');
 
+var yaml = require('js-yaml');
 
 /*
  * Creates an object from HTML element attributes
@@ -78,75 +76,7 @@ var setMetadataFromMarkdown = function(node, attributes) {
     }
 }
 
-function qRead (node, _path) {
-    var syllabus;
-    var metadata;
-
-    metadata = QFS.read(path.resolve(_path, 'content.md'))
-    .then(parseMarkdown({ "processMarkdown": false }))
-    .then(function(parsed) {
-        var metadataYAML;
-
-        // Validate all metadata attributes, I'm looking at your "Code-Along content"
-        setMetadataFromMarkdown(node, parsed.attributes);
-
-        // Write validated meta back to file
-        try {
-            metadataYAML = YAML.safeDump(parsed.attributes);
-
-        } catch (e) {
-            gutil.log(
-                gutil.colors.red('Metadata'),
-                'error serializing back to YAML, please inspect:',
-                gutil.colors.yellow(path.basename(_path))
-            );
-            gutil.log('\n\n', gutil.colors.yellow(e.message));
-
-            return Q.reject(e);
-        }
-
-        // Write over original
-        return QFS.write(
-            path.resolve(_path, 'content.md')
-        ,   [   '---'
-            ,   metadataYAML
-            ,   '---'
-            ,   ''
-            ,   parsed.body
-            ].join('\n')
-        );
-    })
-
-    syllabus = QFS.read(path.resolve(_path, 'syllabus.YAML'))
-    .then(function (syllabus) {
-        if (_.isEmpty(syllabus)) {
-            gutil.log("Warning: No syllabus.YAML file found");
-            return "";
-        }
-
-        try {
-            syllabus = YAML.safeLoad(syllabus);
-            _.merge(node, {'syllabus': syllabus});
-
-            gutil.log(
-                gutil.colors.green('Syllabus'),
-                'included for',
-                gutil.colors.blue(path.basename(_path))
-            );
-
-        } catch (e) {
-            gutil.log(
-                gutil.colors.red('Syllabus'),
-                'has invalid YAML, please correct:',
-                gutil.colors.yellow(path.basename(_path))
-            );
-            gutil.log('\n\n', gutil.colors.yellow(e.message));
-        }
-    })
-
-    return Q.allSettled([metadata, syllabus]);
-}
-var setMetadata = module.exports = function setMetadata (rootDir) {
+var setMetadata = module.exports = function(rootDir) {
     return function (node) {
         /* Legacy methods for storing metadata */
         setMetadataLegacy(node);
@@ -166,7 +96,40 @@ var setMetadata = module.exports = function setMetadata (rootDir) {
         var _path = path.resolve(rootDir, node.src);
 
         /* Metadata from markdown */
-        return qRead(node, _path);
+        return Q.allSettled([
+            Q.fs.read(path.resolve(_path, 'content.md'))
+                .then(parseMarkdown({ "processMarkdown": false }))
+                .then(function(parsed) {
+                    setMetadataFromMarkdown(node, parsed.attributes);
+                })
+        ,
+            Q.fs.read(path.resolve(_path, 'syllabus.yaml'))
+                .then(function (syllabus) {
+                    if (_.isEmpty(syllabus)) {
+                        gutil.log("Warning: No syllabus.yaml file found");
+                        return "";
+                    }
+
+                    try {
+                        syllabus = yaml.safeLoad(syllabus);
+                        _.merge(node, {'syllabus': syllabus});
+
+                        gutil.log(
+                            gutil.colors.green('Syllabus'),
+                            'included for',
+                            gutil.colors.blue(path.basename(_path))
+                        );
+
+                    } catch (e) {
+                        gutil.log(
+                            gutil.colors.red('Syllabus'),
+                            'has invalid yaml, please correct:',
+                            gutil.colors.yellow(path.basename(_path))
+                        );
+                        gutil.log('\n\n', gutil.colors.yellow(e.message));
+                    }
+                })
+        ]);
     }
 };
 
