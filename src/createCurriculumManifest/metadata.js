@@ -116,12 +116,15 @@ function qRead (node, _path) {
             ].join('\n')
         );
     })
+    .catch(function () {
+        gutil.log(gutil.colors.red("Error"), "trying to open syllabus.yaml");
+    });
 
-    syllabus = QFS.read(path.resolve(_path, 'syllabus.YAML'))
+    syllabus = QFS.read(path.resolve(_path, 'syllabus.yaml'))
     .then(function (syllabus) {
         if (_.isEmpty(syllabus)) {
-            gutil.log("Warning: No syllabus.YAML file found");
-            return "";
+            gutil.log("Warning: No syllabus.yaml file found");
+            return;
         }
 
         try {
@@ -143,6 +146,9 @@ function qRead (node, _path) {
             gutil.log('\n\n', gutil.colors.yellow(e.message));
         }
     })
+    .catch(function () {
+        gutil.log(gutil.colors.red("Error"), "trying to open syllabus.yaml");
+    });
 
     return Q.allSettled([metadata, syllabus]);
 }
