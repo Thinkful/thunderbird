@@ -79,6 +79,8 @@ var setMetadataFromMarkdown = function(node, attributes) {
 }
 
 function qRead (node, _path) {
+    var relativePath = _path.replace(path.dirname(_path), '');
+
     var contentPath = path.resolve(_path, 'content.md')
     ,   metadata;
 
@@ -120,7 +122,7 @@ function qRead (node, _path) {
         );
     })
     .catch(function () {
-        gutil.log(gutil.colors.red("Error"), "trying to open", contentPath);
+        gutil.log(gutil.colors.red("Error"), "trying to open", relativePath);
     });
 
     syllabus = QFS.read(syllabusPath)
@@ -150,7 +152,7 @@ function qRead (node, _path) {
         }
     })
     .catch(function () {
-        gutil.log(gutil.colors.red("Error"), "trying to open", syllabusPath);
+        gutil.log(gutil.colors.red("Error"), "trying to open", relativePath);
     });
 
     return Q.allSettled([metadata, syllabus]);
