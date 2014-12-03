@@ -79,10 +79,13 @@ var setMetadataFromMarkdown = function(node, attributes) {
 }
 
 function qRead (node, _path) {
-    var syllabus;
-    var metadata;
+    var contentPath = path.resolve(_path, 'content.md')
+    ,   metadata;
 
-    metadata = QFS.read(path.resolve(_path, 'content.md'))
+    var syllabusPath = path.resolve(_path, 'syllabus.yaml')
+    ,   syllabus;
+
+    metadata = QFS.read(contentPath)
     .then(parseMarkdown({ "processMarkdown": false }))
     .then(function(parsed) {
         var metadataYAML;
@@ -117,10 +120,10 @@ function qRead (node, _path) {
         );
     })
     .catch(function () {
-        gutil.log(gutil.colors.red("Error"), "trying to open syllabus.yaml");
+        gutil.log(gutil.colors.red("Error"), "trying to open", contentPath);
     });
 
-    syllabus = QFS.read(path.resolve(_path, 'syllabus.yaml'))
+    syllabus = QFS.read(syllabusPath)
     .then(function (syllabus) {
         if (_.isEmpty(syllabus)) {
             gutil.log("Warning: No syllabus.yaml file found");
@@ -147,7 +150,7 @@ function qRead (node, _path) {
         }
     })
     .catch(function () {
-        gutil.log(gutil.colors.red("Error"), "trying to open syllabus.yaml");
+        gutil.log(gutil.colors.red("Error"), "trying to open", syllabusPath);
     });
 
     return Q.allSettled([metadata, syllabus]);
