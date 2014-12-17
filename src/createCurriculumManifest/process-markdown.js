@@ -123,6 +123,22 @@ var killStyles = function($) {
     $('style').replaceWith('');
 }
 
+var externalLinkTemplate = _.template(
+    '<a href="<%= href %>" alt="<%= alt %>" target="_blank"> <%= text %> </a>');
+var processExternalLinks = function function_name ($) {
+    $('[href]').each(function (i, el) {
+        el = $(el);
+        if(!/http|https/.test(el.attr('href'))) {
+            return;
+        }
+        $(el).replaceWith(externalLinkTemplate({
+            href: el.attr('href'),
+            alt: el.attr('alt'),
+            text: el.text()
+        }))
+    });
+}
+
 module.exports = function processMarkdown(markdown) {
     var html = marked(markdown);
     var $ = createDom(html);
@@ -133,6 +149,7 @@ module.exports = function processMarkdown(markdown) {
     replaceYoutube($);
     replaceCodepen($);
     replaceAframe($);
+    processExternalLinks($);
 
     return $('body').html();
 }
