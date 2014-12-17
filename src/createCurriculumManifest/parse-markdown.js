@@ -20,7 +20,7 @@ module.exports = function(options) {
     return function parseMarkdown(str) {
         var parsed;
 
-        if (_.isEmpty(str)) {
+        if (_.isEmpty(str) || _.isEmpty(str.replace(/(\n|\s)*/g, ''))) {
             return "";
         }
 
