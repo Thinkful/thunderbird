@@ -125,12 +125,9 @@ var killStyles = function($) {
 
 var externalLinkTemplate = _.template(
     '<a href="<%= href %>" alt="<%= alt %>" target="_blank"> <%= text %> </a>');
-var processExternalLinks = function function_name ($) {
+var setTargetAttribute_blank = function ($) {
     $('[href]').each(function (i, el) {
         el = $(el);
-        if(!/http|https/.test(el.attr('href'))) {
-            return;
-        }
         $(el).replaceWith(externalLinkTemplate({
             href: el.attr('href'),
             alt: el.attr('alt'),
@@ -149,7 +146,7 @@ module.exports = function processMarkdown(markdown) {
     replaceYoutube($);
     replaceCodepen($);
     replaceAframe($);
-    processExternalLinks($);
+    setTargetAttribute_blank($);
 
     return $('body').html();
 }
