@@ -90,15 +90,21 @@ function qRead (node, _path) {
     metadata = QFS.read(contentPath)
     .then(parseMarkdown({ "processMarkdown": false }))
     .then(function(parsed) {
+        /**
+         * Validate content and formatting, overwrites original with updates
+         */
         var metadataYAML;
+        var body;
 
-        // Validate all metadata attributes, I'm looking at your "Code-Along content"
+        // Trim white space from beginning and end of markdown
+        body = (parsed.body || '').replace(/^\s+|\s+$/, '');
+
+        // Validate all metadata attributes, I'm looking at you "Code-Along content"
         setMetadataFromMarkdown(node, parsed.attributes);
 
-        // Write validated meta back to file
+        // Write validated meta back to file, or report error
         try {
             metadataYAML = YAML.safeDump(parsed.attributes);
-
         } catch (e) {
             gutil.log(
                 gutil.colors.red('Metadata'),
@@ -110,16 +116,20 @@ function qRead (node, _path) {
             return Q.reject(e);
         }
 
-        // Write over original
+        // Overwrite original with validated content
         return QFS.write(
             path.resolve(_path, 'content.md')
         ,   [   '---'
             ,   metadataYAML
             ,   '---'
             ,   ''
-            ,   parsed.body
+            ,   body
+            ,   ''
             ].join('\n')
-        );
+        ).catch(function () {
+            gutil.log(
+                gutil.colors.red("Error"), "trying to write", relativePath);
+        });
     })
     .catch(function () {
         gutil.log(gutil.colors.red("Error"), "trying to open", relativePath);
