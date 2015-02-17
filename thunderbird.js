@@ -10,7 +10,7 @@ var argv = require('yargs').argv;
 
 var gulpPath = path.resolve(__dirname)
 
-/* Thinkdown help */
+/* Thunderbird help */
 if (argv.help) {
     process.stdout.write(fs.readFileSync(path.resolve(__dirname, "usage.txt")));
     process.exit(1);
@@ -25,8 +25,8 @@ if (argv["i-really-love-dogs"]) {
 var build;
 var local = argv.local;
 if (local) {
-    console.log("Build default for local builds: /usr/local/tmp/thinkdown-build");
-    build = "/usr/local/tmp/thinkdown-build";
+    console.log("Build default for local builds: /usr/local/tmp/t-build");
+    build = "/usr/local/tmp/t-build";
 }
 
 build = argv.build || argv.curric || build;
@@ -40,7 +40,7 @@ if (!source) {
     if (fs.existsSync("content")) {
         source = "content";
     } else {
-        console.log("Please run thinkdown2 from the curriculum directory. 'content' not found.");
+        console.log("Please run thunderbird from the curriculum directory. 'content' not found.");
         process.exit(1);
     }
 }
@@ -73,13 +73,13 @@ gulp.stdout.on('data', function(data) {
 });
 gulp.stdout.on('end', function(data) {
     process.stdout.write(data ? (decoder.write(data) + decoder.end()) : "");
-    console.log("****** Thinkdown gulp completed. ******\n");
+    console.log("****** Thunderbird gulp completed. ******\n");
 });
 
 /* Sets up propagation of Gulp's exit() into this process */
 gulp.on('exit', function(code) {
     if (code != 0) {
-        console.log('Thinkdown2 Failed: ' + code);
+        console.log('Thunderbird Failed: ' + code);
         process.exit(1);
     }
 });

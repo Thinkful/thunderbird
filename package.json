@@ -1,25 +1,25 @@
 {
-  "name": "thinkdown2",
-  "version": "0.0.1",
+  "name": "thunderbird",
+  "version": "0.1.0",
   "description": "Create curricula suitable for Eagle to consume.",
   "main": "index.js",
   "preferGlobal": "true",
   "bin": {
-    "thinkdown2": "thinkdown2.js"
+    "thunderbird": "thunderbird.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/thinkful/thinkdown.git)"
+    "url": "https://github.com/thinkful/thunderbird.git)"
   },
   "author": "Thinkful",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/thinkful/thinkdown.git)/issues"
+    "url": "https://github.com/thinkful/thunderbird.git)/issues"
   },
-  "homepage": "https://github.com/thinkful/thinkdown.git)",
+  "homepage": "https://github.com/thinkful/thunderbird.git)",
   "dependencies": {
     "del": "^0.1.3",
     "ecstatic": "^0.5.5",
