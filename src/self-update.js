@@ -25,6 +25,7 @@ var runIfLatest = function(run) {
                     })
                 } else {
                     process.stdout.write("Up to date. ******\n");
+                    run();
                 }
             } else {
                 console.log("Warning: unable to connect to npm. Skipping version check.");
