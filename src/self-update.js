@@ -23,7 +23,7 @@ var runIfLatest = function(run) {
                         if (er) {
                             console.log("Error loading npm!", err);
                         }
-                        npm.commands["update"]("-g", "thunderbird", function() {
+                        npm.commands.update(["-g", "thunderbird"], function() {
                             console.log(">>>>>> Update finished, re-run the new version! <<<<<<");
                             process.exit(1);
                         })

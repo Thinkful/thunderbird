@@ -16,7 +16,7 @@ if (argv.help) {
 }
 
 if (argv["version"]) {
-    var localVersion = require("./../package.json")["version"];
+    var localVersion = require("./package.json")["version"];
     console.log(localVersion);
     process.exit(1);
 }
