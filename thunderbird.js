@@ -15,6 +15,12 @@ if (argv.help) {
     process.exit(1);
 }
 
+if (argv["version"]) {
+    var localVersion = require("./../package.json")["version"];
+    console.log(localVersion);
+    process.exit(1);
+}
+
 if (argv["i-really-love-dogs"]) {
     spawn('open', ['http://omfgdogs.com/']);
     process.exit(1);

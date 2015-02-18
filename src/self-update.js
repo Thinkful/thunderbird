@@ -19,7 +19,7 @@ var runIfLatest = function(run) {
             if (jsonResp && jsonResp["version"]) {
                 if (semver.lt(localVersion, jsonResp["version"])) {
                     process.stdout.write("Updating! ******\n");
-                    npm.commands["updage"]("-g", "thunderbird", function() {
+                    npm.commands["update"]("-g", "thunderbird", function() {
                         console.log("****** Update finished, re-run the new version! ******");
                         process.exit(1);
                     })

@@ -1,6 +1,6 @@
 {
   "name": "thunderbird",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Curriculum editing and publishing tool by Thinkful.",
   "main": "index.js",
   "preferGlobal": "true",
@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/thinkful/thunderbird.git)"
+    "url": "https://github.com/thinkful/thunderbird.git"
   },
   "author": "Thinkful",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/thinkful/thunderbird.git)/issues"
+    "url": "https://github.com/thinkful/thunderbird.git/issues"
   },
-  "homepage": "https://github.com/thinkful/thunderbird.git)",
+  "homepage": "https://github.com/thinkful/thunderbird.git",
   "dependencies": {
     "del": "^0.1.3",
     "ecstatic": "^0.5.5",
