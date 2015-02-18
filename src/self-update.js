@@ -1,6 +1,7 @@
 var StringDecoder = require('string_decoder').StringDecoder;
 var semver = require('semver');
 var request = require('request');
+var npm = require('npm');
 
 var runIfLatest = function(run) {
 
@@ -17,7 +18,11 @@ var runIfLatest = function(run) {
             jsonResp = JSON.parse(body.body)
             if (jsonResp && jsonResp["version"]) {
                 if (semver.lt(localVersion, jsonResp["version"])) {
-                    //update
+                    process.stdout.write("Updating! ******\n");
+                    npm.commands["updage"]("-g", "thunderbird", function() {
+                        console.log("****** Update finished, re-run the new version! ******");
+                        process.exit(1);
+                    })
                 } else {
                     process.stdout.write("Up to date. ******\n");
                 }
