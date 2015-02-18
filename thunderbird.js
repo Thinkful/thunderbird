@@ -34,8 +34,8 @@ function runThunderbird() {
     var build;
     var local = argv.local;
     if (local) {
-        console.log("Build default for local builds: /usr/local/tmp/t-build");
-        build = "/usr/local/tmp/t-build";
+        console.log("Build default for local builds: /usr/local/tmp/tf-thunderbird-build");
+        build = "/usr/local/tmp/tf-thunderbird-build";
     }
 
     build = argv.build || argv.curric || build;

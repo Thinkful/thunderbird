@@ -5,9 +5,9 @@ var semver = require('semver');
 var request = require('request');
 
 var runIfLatest = function(run) {
-    var package = require("./../package.json")
-    var localVersion = package["version"];
-    var packageName = package["name"]
+    var packageJson = require("./../package.json")
+    var localVersion = packageJson["version"];
+    var packageName = packageJson["name"]
 
     process.stdout.write("****** Checking for Thunderbird updates... ");
 

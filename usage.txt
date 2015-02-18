@@ -23,7 +23,7 @@ thunderbird [--build=] [--source=] [--strictuuids] [--help]
 
   default: false
   If --local is specified AND no --build dir is specified, the Thunderbird build
-  is pushed into /usr/local/tmp/t-build, for local testing
+  is pushed into /usr/local/tmp/tf-thunderbird-build, for local testing
   [Work in Progress]
 
 --help
