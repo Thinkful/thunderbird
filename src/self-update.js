@@ -11,7 +11,7 @@ var runIfLatest = function(run) {
     var jsonResp;
     request.get("http://registry.npmjs.org/thunderbird/latest", function(err, body) {
         if (err) {
-            process.stdout.write("Error!", err);
+            process.stdout.write("Error fetching version!", err);
             process.exit(1);
         }
         else {
