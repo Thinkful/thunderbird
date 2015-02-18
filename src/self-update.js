@@ -19,10 +19,15 @@ var runIfLatest = function(run) {
             if (jsonResp && jsonResp["version"]) {
                 if (semver.lt(localVersion, jsonResp["version"])) {
                     process.stdout.write("Updating! ******\n");
-                    npm.commands["update"]("-g", "thunderbird", function() {
-                        console.log(">>>>>> Update finished, re-run the new version! <<<<<<");
-                        process.exit(1);
-                    })
+                    npm.config({}, function(er) {
+                        if (er) {
+                            console.log("Error loading npm!", err);
+                        }
+                        npm.commands["update"]("-g", "thunderbird", function() {
+                            console.log(">>>>>> Update finished, re-run the new version! <<<<<<");
+                            process.exit(1);
+                        })
+                    });
                 } else {
                     process.stdout.write("Up to date. ******\n");
                     run();
