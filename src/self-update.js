@@ -21,9 +21,12 @@ var runIfLatest = function(run) {
                     process.stdout.write("Updating! ******\n");
                     npm.load({}, function(er) {
                         if (er) {
-                            console.log("Error loading npm!", err);
+                            console.log("Error loading npm!", er);
                         }
-                        npm.commands.update(["-g", "thunderbird"], function() {
+                        npm.commands.update(["-g", "thunderbird"], function(err) {
+                            if (err) {
+                                console.log("Error updating!", err);
+                            }
                             console.log(">>>>>> Update finished, re-run the new version! <<<<<<");
                             process.exit(1);
                         })
