@@ -157,7 +157,7 @@ function qRead (node, _path) {
         }
     })
     .catch(function () {
-        gutil.log(gutil.colors.red("Caution"), "could not read metadata at", syllabusPath);
+        gutil.log(gutil.colors.yellow("Caution"), "No syllabus metadata at", syllabusPath);
     });
 
     return Q.allSettled([metadata, syllabus]);
