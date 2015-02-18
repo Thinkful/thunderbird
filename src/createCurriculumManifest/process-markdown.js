@@ -124,7 +124,7 @@ var killStyles = function($) {
 }
 
 var externalLinkTemplate = _.template(
-    '<a href="<%= href %>" alt="<%= alt %>" target="_blank"> <%= text %> </a>');
+    '<a href="<%= href %>" alt="<%= alt %>" target="_blank"><%= text %></a>');
 var setTargetAttribute_blank = function ($) {
     $('[href]').each(function (i, el) {
         el = $(el);
