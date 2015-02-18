@@ -1,6 +1,6 @@
 {
   "name": "thunderbird",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Create curricula suitable for Eagle to consume.",
   "main": "index.js",
   "preferGlobal": "true",
