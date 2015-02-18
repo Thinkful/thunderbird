@@ -1,14 +1,13 @@
 #! /usr/bin/env node
 var fs = require('fs');
 var path = require('path');
+var selfupdate = require('./src/self-update');
 var spawn = require('child_process').spawn;
 var StringDecoder = require('string_decoder').StringDecoder;
 
 var _ = require('lodash');
 var argv = require('yargs').argv;
 
-
-var gulpPath = path.resolve(__dirname)
 
 /* Thunderbird help */
 if (argv.help) {
@@ -21,66 +20,69 @@ if (argv["i-really-love-dogs"]) {
     process.exit(1);
 }
 
-/* Configuration */
-var build;
-var local = argv.local;
-if (local) {
-    console.log("Build default for local builds: /usr/local/tmp/t-build");
-    build = "/usr/local/tmp/t-build";
-}
+/* Self update; if latest version, runThunderbird */
+selfupdate(runThunderbird);
 
-build = argv.build || argv.curric || build;
-if (!build) {
-    console.error("Caution: No build directory specified with --build (using 't-build').");
-    build = "t-build";
-}
-
-var source = argv.source;
-if (!source) {
-    if (fs.existsSync("content")) {
-        source = "content";
-    } else {
-        console.log("Please run thunderbird from the curriculum directory. 'content' not found.");
-        process.exit(1);
+function runThunderbird() {
+    /* Thunderbird / Gulp Configuration */
+    var build;
+    var local = argv.local;
+    if (local) {
+        console.log("Build default for local builds: /usr/local/tmp/t-build");
+        build = "/usr/local/tmp/t-build";
     }
-}
 
-var strictuuids = argv.strictuuids || "false";
-
-var gulpOptions = [
-    'build',
-    '--color',
-    '--cwd=' + gulpPath,
-    '--source=' + path.resolve(source),
-    '--build=' + path.resolve(build),
-    '--strictuuids=' + strictuuids,
-    '--target=' + (_.indexOf(argv._, 'production') >= 0 ? 'production' : 'preview')
-];
-
-if (argv["skip-assets"]) {
-    gulpOptions.push("--skip-assets");
-}
-
-/* Runs Gulp*/
-var gulp = spawn('gulp', gulpOptions, {
-    cwd: gulpPath
-});
-
-/* Sets up Gulp output to stream into this process */
-var decoder = new StringDecoder('utf8');
-gulp.stdout.on('data', function(data) {
-    process.stdout.write(decoder.write(data) + decoder.end());
-});
-gulp.stdout.on('end', function(data) {
-    process.stdout.write(data ? (decoder.write(data) + decoder.end()) : "");
-    console.log("****** Thunderbird gulp completed. ******\n");
-});
-
-/* Sets up propagation of Gulp's exit() into this process */
-gulp.on('exit', function(code) {
-    if (code != 0) {
-        console.log('Thunderbird Failed: ' + code);
-        process.exit(1);
+    build = argv.build || argv.curric || build;
+    if (!build) {
+        console.error("Caution: No build directory specified with --build (using 't-build').");
+        build = "t-build";
     }
-});
 
+    var source = argv.source;
+    if (!source) {
+        if (fs.existsSync("content")) {
+            source = "content";
+        } else {
+            console.log("Please run thunderbird from the curriculum directory. 'content' not found.");
+            process.exit(1);
+        }
+    }
+
+    var gulpPath = path.resolve(__dirname)
+    var gulpOptions = [
+        'build',
+        '--color',
+        '--cwd=' + gulpPath,
+        '--source=' + path.resolve(source),
+        '--build=' + path.resolve(build),
+        '--strictuuids=' + (argv.strictuuids || "false"),
+        '--target=' + (_.indexOf(argv._, 'production') >= 0 ? 'production' : 'preview')
+    ];
+
+    if (argv["skip-assets"]) {
+        gulpOptions.push("--skip-assets");
+    }
+
+    /* Runs Gulp*/
+    var gulp = spawn('gulp', gulpOptions, {
+        cwd: gulpPath
+    });
+
+    /* Sets up Gulp output to stream into this process */
+    var decoder = new StringDecoder('utf8');
+    gulp.stdout.on('data', function(data) {
+        process.stdout.write(decoder.write(data) + decoder.end());
+    });
+    gulp.stdout.on('end', function(data) {
+        process.stdout.write(data ? (decoder.write(data) + decoder.end()) : "");
+        console.log("****** Thunderbird gulp completed. ******\n");
+    });
+
+    /* Sets up propagation of Gulp's exit() into this process */
+    gulp.on('exit', function(code) {
+        if (code != 0) {
+            console.log('Thunderbird Failed: ' + code);
+            process.exit(1);
+        }
+    });
+}
