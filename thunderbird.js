@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 var fs = require('fs');
 var path = require('path');
-var selfupdate = require('./src/self-update');
+var selfUpdate = require('./src/self-update');
 var spawn = require('child_process').spawn;
 var StringDecoder = require('string_decoder').StringDecoder;
 
@@ -27,7 +27,7 @@ if (argv["i-really-love-dogs"]) {
 }
 
 /* Self update; if latest version, runThunderbird */
-selfupdate(runThunderbird);
+selfUpdate(runThunderbird);
 
 function runThunderbird() {
     /* Thunderbird / Gulp Configuration */
@@ -40,7 +40,7 @@ function runThunderbird() {
 
     build = argv.build || argv.curric || build;
     if (!build) {
-        console.error("Caution: No build directory specified with --build (using 't-build').");
+        console.log("Caution: No build directory specified with --build (using 't-build').");
         build = "t-build";
     }
 
