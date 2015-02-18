@@ -89,15 +89,17 @@ function qRead (node, _path) {
     metadata = QFS.read(contentPath)
     .then(parseMarkdown({ "processMarkdown": false }))
     .then(function(parsed) {
+        /**
+         * Validate content and formatting, overwrites original with updates
+         */
         var metadataYAML;
 
         // Trim white space from beginning and end of markdown
         var body = (parsed.body || '').replace(/^\s+|\s+$/, '');
 
-        // Validate all metadata attributes, I'm looking at your "Code-Along content"
         setMetadataFromMarkdown(node, parsed.attributes);
 
-        // Write validated meta back to file
+        // Write validated meta back to file, or report error
         try {
             metadataYAML = YAML.safeDump(parsed.attributes);
         } catch (e) {
