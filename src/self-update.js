@@ -19,7 +19,7 @@ var runIfLatest = function(run) {
             if (jsonResp && jsonResp["version"]) {
                 if (semver.lt(localVersion, jsonResp["version"])) {
                     process.stdout.write("Updating! ******\n");
-                    npm.config({}, function(er) {
+                    npm.load({}, function(er) {
                         if (er) {
                             console.log("Error loading npm!", err);
                         }
