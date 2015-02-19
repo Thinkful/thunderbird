@@ -63,11 +63,8 @@ gulp.task('info', function() {
 
 gulp.task('clean', del.bind(null, [paths.build]));
 
-
-
-
-gulp.task('serve-curriculum', startHttpServer);
 var httpServer;
+gulp.task('serve-curriculum', startHttpServer);
 function startHttpServer (done) {
     if (httpServer) {
         httpServer.close(function () {
@@ -83,10 +80,6 @@ function startHttpServer (done) {
 
     var app = express();
 
-    // app.use(ecstatic({
-    //     root: __dirname + '/t-build'
-    // }));
-
     app.use(function(req, res, next) {
       res.header("Access-Control-Allow-Origin", "*");
       res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -96,21 +89,24 @@ function startHttpServer (done) {
 
     httpServer = http.createServer(app).listen(5002);
 
-    console.log('Listening on :5002');
+    console.log('Listening on localhost:5002');
 
     done();
 }
 
-gulp.task('develop', function () {
+gulp.task('watch', function() {
+    gulp.watch(paths.source + 'structure.xml', ['build']);
+    gulp.watch(paths.source + '/**/content.md', ['build']);
+});
+
+gulp.task('develop', ['build', 'watch'], function () {
     nodemon({
-        exec: ['serve'].concat(process.argv.slice(3)),
-        delay: 50,
+        exec: ['serve-curriculum'].concat(process.argv.slice(3)),
+        delay: 1000,
         verbose: true,
         ext: 'md',
-        watch: [__dirname + '/src', paths.source + '/**/content.md'],
         ignore: ['node_modules']
     })
-    .on('change', ['build'])
     .on('restart', [
         function () {
             console.log("Restarting")
@@ -124,11 +120,6 @@ gulp.task('build', [
     'tree',
     'assets'
 ])
-
-gulp.task('serve', [
-    'build', 'serve-curriculum'
-])
-
 
 gulp.task('default', ['build'] );
 
