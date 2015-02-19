@@ -54,9 +54,11 @@ function runThunderbird() {
         }
     }
 
+    var gulpCommand = argv.dev ? "develop" : "build";
+
     var gulpPath = path.resolve(__dirname)
     var gulpOptions = [
-        'build',
+        gulpCommand,
         '--color',
         '--cwd=' + gulpPath,
         '--source=' + path.resolve(source),

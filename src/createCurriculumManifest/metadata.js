@@ -85,8 +85,13 @@ function qRead (node, _path) {
     var syllabus;
     var contentPath = path.resolve(_path, 'content.md');
     var syllabusPath = path.resolve(_path, 'syllabus.yaml');
+    var fileContents = "";
 
     metadata = QFS.read(contentPath)
+    .then(function(content) {
+        fileContents = content;
+        return content;
+    })
     .then(parseMarkdown({ "processMarkdown": false }))
     .then(function(parsed) {
         /**
@@ -94,8 +99,10 @@ function qRead (node, _path) {
          */
         var metadataYAML;
 
-        // Trim white space from beginning and end of markdown
-        var body = (parsed.body || '').replace(/^\s+|\s+$/, '');
+        // Trim white space from end of markdown
+        var body = (parsed.body || '')
+                       .replace(/\n\s*$/g, '\n')
+                       .replace(/^\n\s*/g, '');
 
         setMetadataFromMarkdown(node, parsed.attributes);
 
@@ -114,16 +121,16 @@ function qRead (node, _path) {
         }
 
         // Write over original with validated content
-        return QFS.write(
-            contentPath
-        ,   [   '---'
-            ,   metadataYAML
-            ,   '---'
-            ,   ''
-            ,   body
-            ,   ''
-            ].join('\n')
-        ).catch(function () {
+        var validatedContents = [
+            '---'
+        ,   metadataYAML
+        ,   '---'
+        ,   ''
+        ,   body
+        ,   ''
+        ].join('\n');
+
+        return QFS.write(contentPath, validatedContents).catch(function () {
             gutil.log(
                 gutil.colors.red("Error"), "trying to write", contentPath);
         });
