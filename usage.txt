@@ -1,4 +1,4 @@
-thinkdown2 [--build=] [--source=] [--strictuuids] [--help]
+thunderbird [--build=] [--source=] [--strictuuids] [--help]
 
 --build=buildDir
 
@@ -15,15 +15,15 @@ thinkdown2 [--build=] [--source=] [--strictuuids] [--help]
 
   default: false
   If the strictuuids flag is used, no UUID's will be written to structure.xml,
-  and instead Thinkdown will enforce that all units, lessons, and assignemnts
+  and instead Thunderbird will enforce that all units, lessons, and assignemnts
   already have UUID's generated. --strictuuid's is ON when deploying a
   curriculum to master.
 
 --local
 
   default: false
-  If --local is specified AND no --build dir is specified, the thinkdown build
-  is pushed into /usr/local/tmp/thinkdown-build, for local testing
+  If --local is specified AND no --build dir is specified, the Thunderbird build
+  is pushed into /usr/local/tmp/tf-thunderbird-build, for local testing
   [Work in Progress]
 
 --help

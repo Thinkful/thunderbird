@@ -3,7 +3,7 @@ var htmlparser = require('htmlparser2');
 var gutil = require('gulp-util');
 
 /*
- * Allowed html tags in the final output of thinkdown.
+ * Allowed html tags in the final output of Thunderbird.
  *
  */
 var htmlTags =
@@ -16,7 +16,7 @@ var allowedTags = htmlTags.concat(customTags);
 
 /*
  * Warns if any non-standard tags are used in the markdown or are generated
- * in preceding steps of thinkdown.
+ * in preceding steps of Thunderbird.
  *
  */
 module.exports = function validateHtml(html, filename) {

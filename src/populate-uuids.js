@@ -55,7 +55,7 @@ var populate = function (xmlStr, options) {
             var e = new UUIDNotFoundException();
             e.message = "Node " + node[0].nodeName + " with src=" + node.attr("src") +
                         " does not have a UUID." +
-                        "\n >> Run thinkdown locally and commit the UUID changes " +
+                        "\n >> Run thunderbird locally and commit the UUID changes " +
                         "into the repository";
             throw e;
         }

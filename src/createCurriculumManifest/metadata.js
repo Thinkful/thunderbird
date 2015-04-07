@@ -81,11 +81,10 @@ var setMetadataFromMarkdown = function(node, attributes) {
 function qRead (node, _path) {
     var relativePath = _path.replace(path.dirname(_path), '');
 
-    var contentPath = path.resolve(_path, 'content.md')
-    ,   metadata;
-
-    var syllabusPath = path.resolve(_path, 'syllabus.yaml')
-    ,   syllabus;
+    var metadata;
+    var syllabus;
+    var contentPath = path.resolve(_path, 'content.md');
+    var syllabusPath = path.resolve(_path, 'syllabus.yaml');
 
     metadata = QFS.read(contentPath)
     .then(parseMarkdown({ "processMarkdown": false }))
@@ -94,12 +93,10 @@ function qRead (node, _path) {
          * Validate content and formatting, overwrites original with updates
          */
         var metadataYAML;
-        var body;
 
         // Trim white space from beginning and end of markdown
-        body = (parsed.body || '').replace(/^\s+|\s+$/, '');
+        var body = (parsed.body || '').replace(/^\s+|\s+$/, '');
 
-        // Validate all metadata attributes, I'm looking at you "Code-Along content"
         setMetadataFromMarkdown(node, parsed.attributes);
 
         // Write validated meta back to file, or report error
@@ -116,9 +113,9 @@ function qRead (node, _path) {
             return Q.reject(e);
         }
 
-        // Overwrite original with validated content
+        // Write over original with validated content
         return QFS.write(
-            path.resolve(_path, 'content.md')
+            contentPath
         ,   [   '---'
             ,   metadataYAML
             ,   '---'
@@ -128,11 +125,11 @@ function qRead (node, _path) {
             ].join('\n')
         ).catch(function () {
             gutil.log(
-                gutil.colors.red("Error"), "trying to write", relativePath);
+                gutil.colors.red("Error"), "trying to write", contentPath);
         });
     })
     .catch(function () {
-        gutil.log(gutil.colors.red("Error"), "trying to open", relativePath);
+        gutil.log(gutil.colors.red("Error"), "trying to read", contentPath);
     });
 
     syllabus = QFS.read(syllabusPath)
@@ -162,11 +159,12 @@ function qRead (node, _path) {
         }
     })
     .catch(function () {
-        gutil.log(gutil.colors.red("Error"), "trying to open", relativePath);
+        gutil.log(gutil.colors.yellow("Caution"), "No syllabus metadata at", syllabusPath);
     });
 
     return Q.allSettled([metadata, syllabus]);
 }
+
 var setMetadata = module.exports = function setMetadata (rootDir) {
     return function (node) {
         /* Legacy methods for storing metadata */
