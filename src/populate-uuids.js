@@ -90,10 +90,11 @@ module.exports = function(options) {
             return done(new PluginError('gulp-populate-uuids', 'Streaming not supported'));
         }
 
-        var xmlStr = file.contents.toString('utf8');
+        var originalXml = file.contents.toString('utf8');
+        var xmlStr;
         try {
-            xmlStr = populate(xmlStr, options);
-        } catch (e ) {
+            xmlStr = populate(originalXml, options);
+        } catch (e) {
             gutil.log(gutil.colors.red('Strict UUID Check Failed: ' + e.message));
             return done(new PluginError('gulp-populate-uuids', 'Strict UUID Check Failed.'));
         }
