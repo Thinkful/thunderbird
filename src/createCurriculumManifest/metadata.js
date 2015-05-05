@@ -73,7 +73,7 @@ var setMetadataFromMarkdown = function(node, attributes) {
     /* TODO(olex): This is the only case where markdown overrides structure.xml
      *             Switch to <project> tags instead of <assignment>
      */
-    if (/project/.test(attributes.type)) {
+    if (/[Pp]roject/.test(attributes.type)) {
         node.type = "project";
     }
 }
