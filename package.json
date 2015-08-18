@@ -39,7 +39,7 @@
     "js-yaml": "^3.2.3",
     "jsdom": "^1.0.0-pre.4",
     "lodash": "^2.4.1",
-    "marked": "^0.3.2",
+    "marked": "0.3.3",
     "node-uuid": "^1.4.1",
     "request": "^2.53.0",
     "semver": "^4.3.0",
