@@ -55,7 +55,7 @@ var populate = function (xmlStr, options) {
             var e = new UUIDNotFoundException();
             e.message = "Node " + node[0].nodeName + " with src=" + node.attr("src") +
                         " does not have a UUID." +
-                        "\n >> Run thinkdown locally and commit the UUID changes " +
+                        "\n >> Run thunderbird locally and commit the UUID changes " +
                         "into the repository";
             throw e;
         }
@@ -90,10 +90,11 @@ module.exports = function(options) {
             return done(new PluginError('gulp-populate-uuids', 'Streaming not supported'));
         }
 
-        var xmlStr = file.contents.toString('utf8');
+        var originalXml = file.contents.toString('utf8');
+        var xmlStr;
         try {
-            xmlStr = populate(xmlStr, options);
-        } catch (e ) {
+            xmlStr = populate(originalXml, options);
+        } catch (e) {
             gutil.log(gutil.colors.red('Strict UUID Check Failed: ' + e.message));
             return done(new PluginError('gulp-populate-uuids', 'Strict UUID Check Failed.'));
         }

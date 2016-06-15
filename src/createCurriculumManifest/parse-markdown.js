@@ -2,10 +2,10 @@ var _ = require('lodash');
 var frontMatter = require('front-matter');
 
 var fixFrontMatterDelimiters = function(str) {
-    // Changes arbitrary -'d separators in the old thinkdown to three ---
+    // Changes arbitrary -'d separators in the old thunderbird to three ---
     str = str.replace(/\n\s*----+\s*\n/g, '\n---\n');
 
-    // Prepends --- to parse old thinkdown format as front matter
+    // Prepends --- to parse old thunderbird format as front matter
     if (!/---/.test(str.split('\n')[0])) {
         str = '---\n' + str;
     }

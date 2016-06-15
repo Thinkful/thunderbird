@@ -81,24 +81,34 @@ var setMetadataFromMarkdown = function(node, attributes) {
 function qRead (node, _path) {
     var relativePath = _path.replace(path.dirname(_path), '');
 
-    var contentPath = path.resolve(_path, 'content.md')
-    ,   metadata;
-
-    var syllabusPath = path.resolve(_path, 'syllabus.yaml')
-    ,   syllabus;
+    var metadata;
+    var syllabus;
+    var contentPath = path.resolve(_path, 'content.md');
+    var syllabusPath = path.resolve(_path, 'syllabus.yaml');
+    var fileContents = "";
 
     metadata = QFS.read(contentPath)
+    .then(function(content) {
+        fileContents = content;
+        return content;
+    })
     .then(parseMarkdown({ "processMarkdown": false }))
     .then(function(parsed) {
+        /**
+         * Validate content and formatting, overwrites original with updates
+         */
         var metadataYAML;
 
-        // Validate all metadata attributes, I'm looking at your "Code-Along content"
+        // Trim white space from end of markdown
+        var body = (parsed.body || '')
+                       .replace(/\n\s*$/g, '\n')
+                       .replace(/^\n\s*/g, '');
+
         setMetadataFromMarkdown(node, parsed.attributes);
 
-        // Write validated meta back to file
+        // Write validated meta back to file, or report error
         try {
             metadataYAML = YAML.safeDump(parsed.attributes);
-
         } catch (e) {
             gutil.log(
                 gutil.colors.red('Metadata'),
@@ -110,19 +120,23 @@ function qRead (node, _path) {
             return Q.reject(e);
         }
 
-        // Write over original
-        return QFS.write(
-            path.resolve(_path, 'content.md')
-        ,   [   '---'
-            ,   metadataYAML
-            ,   '---'
-            ,   ''
-            ,   parsed.body
-            ].join('\n')
-        );
+        // Write over original with validated content
+        var validatedContents = [
+            '---'
+        ,   metadataYAML
+        ,   '---'
+        ,   ''
+        ,   body
+        ,   ''
+        ].join('\n');
+
+        return QFS.write(contentPath, validatedContents).catch(function () {
+            gutil.log(
+                gutil.colors.red("Error"), "trying to write", contentPath);
+        });
     })
     .catch(function () {
-        gutil.log(gutil.colors.red("Error"), "trying to open", relativePath);
+        gutil.log(gutil.colors.red("Error"), "trying to read", contentPath);
     });
 
     syllabus = QFS.read(syllabusPath)
@@ -152,11 +166,12 @@ function qRead (node, _path) {
         }
     })
     .catch(function () {
-        gutil.log(gutil.colors.red("Error"), "trying to open", relativePath);
+        gutil.log(gutil.colors.yellow("Caution"), "No syllabus metadata at", syllabusPath);
     });
 
     return Q.allSettled([metadata, syllabus]);
 }
+
 var setMetadata = module.exports = function setMetadata (rootDir) {
     return function (node) {
         /* Legacy methods for storing metadata */
