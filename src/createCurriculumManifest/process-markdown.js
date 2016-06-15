@@ -127,7 +127,7 @@ var externalLinkTemplate = _.template(
     '<a href="<%= href %>" alt="<%= alt %>" target="_blank"><%= text %></a>');
 
 var setTargetAttribute_blank = function ($) {
-    $('[href]:not([href*=courses.thinkful.com]):not([href*=thinkful.com])').each(function (i, el) {
+    $('[href]:not([href*="courses.thinkful.com"]):not([href*="thinkful.com"])').each(function (i, el) {
         el = $(el);
         $(el).replaceWith(externalLinkTemplate({
             href: el.attr('href'),
