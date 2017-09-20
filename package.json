@@ -1,6 +1,6 @@
 {
   "name": "thunderbird",
-  "version": "0.1.20",
+  "version": "0.1.21",
   "description": "Curriculum editing and publishing tool by Thinkful.",
   "main": "index.js",
   "preferGlobal": "true",
