@@ -1,6 +1,6 @@
 {
   "name": "thunderbird",
-  "version": "0.1.21",
+  "version": "0.1.22",
   "description": "Curriculum editing and publishing tool by Thinkful.",
   "main": "index.js",
   "preferGlobal": "true",
@@ -41,7 +41,7 @@
     "lodash": "^2.4.1",
     "marked": "0.3.3",
     "node-uuid": "^1.4.1",
-    "request": "^2.53.0",
+    "request": "2.81.0",
     "semver": "^4.3.0",
     "q": "^1.0.1",
     "q-io": "^1.11.6",
