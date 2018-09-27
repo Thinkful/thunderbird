@@ -70,11 +70,11 @@ var setMetadataFromStructure = function(node) {
 var setMetadataFromMarkdown = function(node, attributes) {
     _.defaults(node, attributes);
 
-    /* TODO(olex): This is the only case where markdown overrides structure.xml
-     *             Switch to <project> tags instead of <assignment>
-     */
+    // We override default node types in some cases
     if (/project/.test(attributes.type)) {
         node.type = "project";
+    } else if (/checkpoint/.test(attributes.type)) {
+        node.type = "checkpoint";
     }
 }
 
