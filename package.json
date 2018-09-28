@@ -1,6 +1,6 @@
 {
   "name": "thunderbird",
-  "version": "0.1.22",
+  "version": "0.1.23",
   "description": "Curriculum editing and publishing tool by Thinkful.",
   "main": "index.js",
   "preferGlobal": "true",
@@ -15,7 +15,7 @@
     "url": "https://github.com/thinkful/eagle-flavored-thinkdown.git"
   },
   "author": "Thinkful",
-  "license": "Copyright (C) 2015 by Thinkful, Inc.",
+  "license": "Copyright (C) 2018 by Thinkful, Inc.",
   "bugs": {
     "url": "https://github.com/thinkful/eagle-flavored-thinkdown.git/issues"
   },
