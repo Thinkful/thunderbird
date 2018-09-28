@@ -1,1 +1,1 @@
-Copyright (C) 2014-2015 Thinkful, Inc.
+Copyright (C) 2014-2018 Thinkful, Inc.

@@ -5,42 +5,55 @@ var gutil = require('gulp-util');
 var validateHtml = require('./validate-html');
 
 var filenameFromKey = function(contentKey) {
-    switch (contentKey) {
-        case "body":            return "content.md"
-        case "comprehension":   return "comprehension.md"
-        case "raw":             return "content.html"
-    }
-}
+  switch (contentKey) {
+    case 'body':
+      return 'content.md';
+    case 'comprehension':
+      return 'comprehension.md';
+    case 'raw':
+      return 'content.html';
+  }
+};
 
 var validateNode = function(node) {
-    // Validate content
-    _.forOwn(node.content, function(html, key) {
-        validateHtml(html, node.src + "/" + filenameFromKey(key));
-    });
+  // Validate content
+  _.forOwn(node.content, function(html, key) {
+    validateHtml(html, node.src + '/' + filenameFromKey(key));
+  });
 
-    // Warn in case there is no node name
-    if (_.isEmpty(node.name)) {
-        gutil.log("Warning: Unnamed node " + node.type +". uuid=" + node.uuid);
-    };
+  // Warn in case there is no node name
+  if (_.isEmpty(node.name)) {
+    gutil.log('Warning: Unnamed node ' + node.type + '. uuid=' + node.uuid);
+  }
 
-    // Error out in case there is no uuid
-    if (_.isEmpty(node.root.$(node.element).attr("uuid")) && node.type != "course") {
-        gutil.log("Warning: Empty uuid on " + gutil.colors.red(node.type) +" with src=" + node.src);
-        gutil.log(gutil.colors.red("Remove and generate a new one, or find removed UUID."));
-        utils.fail();
-    };
+  // Error out in case there is no uuid
+  if (
+    _.isEmpty(node.root.$(node.element).attr('uuid')) &&
+    node.type != 'course'
+  ) {
+    gutil.log(
+      'Warning: Empty uuid on ' +
+        gutil.colors.red(node.type) +
+        ' with src=' +
+        node.src
+    );
+    gutil.log(
+      gutil.colors.red('Remove and generate a new one, or find removed UUID.')
+    );
+    utils.fail();
+  }
 
-    return node;
-}
+  return node;
+};
 
 var validateTree = function(treeRoot) {
-    validateNode(treeRoot);
+  validateNode(treeRoot);
 
-    _.forEach(treeRoot.children, function(child) {
-        validateTree(child);
-    });
+  _.forEach(treeRoot.children, function(child) {
+    validateTree(child);
+  });
 
-    return treeRoot;
-}
+  return treeRoot;
+};
 
 module.exports = validateTree;

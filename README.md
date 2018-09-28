@@ -1,20 +1,24 @@
-#Thunderbird
+# 🌩💥🐦 Thunderbird
 
 Converts a curriculum from a `structure.xml` file and a bunch of folders
 into a curriculum.json. Adds UUIDs, merges metadata, and creates the
 curriculum tree.
 
-##Installation
+## Installation
 
-    npm install -g thunderbird
-  
-##Usage
+```bash
+npm install -g thunderbird
+```
 
-    thunderbird --help
+## Usage
+
+```bash
+thunderbird --help
+```
 
 In most cases, you just need to run the default `thunderbird` in a curriculum directory.
 
-##Updating
+## Updating
 
 `thunderbird` checks for new versions of itself on `npm` every time it runs.
 
