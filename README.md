@@ -6,11 +6,15 @@ curriculum tree.
 
 ## Installation
 
-    npm install -g thunderbird
+```bash
+npm install -g thunderbird
+```
 
 ## Usage
 
-    thunderbird --help
+```bash
+thunderbird --help
+```
 
 In most cases, you just need to run the default `thunderbird` in a curriculum directory.
 
