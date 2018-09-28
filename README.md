@@ -1,4 +1,4 @@
-# Thunderbird
+# 🌩💥🐦 Thunderbird
 
 Converts a curriculum from a `structure.xml` file and a bunch of folders
 into a curriculum.json. Adds UUIDs, merges metadata, and creates the
