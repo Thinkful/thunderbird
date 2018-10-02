@@ -1,4 +1,4 @@
-const getIframe = require('./getIframe');
+const { getIframe } = require('../utils');
 
 module.exports = (src, $) => {
   const newElement = $.parseHTML(
