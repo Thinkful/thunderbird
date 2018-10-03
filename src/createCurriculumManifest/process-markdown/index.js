@@ -1,6 +1,6 @@
 const marked = require('marked');
 
-const createDom = require('../create-dom');
+const createDom = require('../../create-dom');
 
 const renderer = require('./renderer');
 const tasks = require('./tasks');
