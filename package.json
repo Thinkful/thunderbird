@@ -37,7 +37,7 @@
     "jquery": "~2.1.4",
     "js-beautify": "^1.5.1",
     "js-yaml": "^3.2.3",
-    "jsdom": "^1.0.0-pre.4",
+    "jsdom": "^11.0.0",
     "lodash": "^2.4.1",
     "marked": "0.3.3",
     "node-uuid": "^1.4.1",
