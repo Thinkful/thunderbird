@@ -1,7 +1,6 @@
 var del = require('del');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
-var debug = require('gulp-debug');
 var filter = require('gulp-filter');
 var flatten = require('gulp-flatten');
 var nodemon = require('gulp-nodemon');
@@ -84,7 +83,6 @@ function startHttpServer(done) {
   var gulp = require('gulp');
   var http = require('http');
   var express = require('express');
-  var ecstatic = require('ecstatic');
 
   var app = express();
 
