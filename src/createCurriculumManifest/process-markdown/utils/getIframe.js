@@ -1,4 +1,4 @@
-module.exports = (src, height = null, width = null) =>)
+module.exports = (src, height = null, width = null) =>
   `<iframe ` +
   `${height !== null ? `height="${height}" ` : ''}` +
   `${width !== null ? `width="${width}" ` : ''}` +

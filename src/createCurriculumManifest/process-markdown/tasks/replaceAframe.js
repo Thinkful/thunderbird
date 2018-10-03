@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const gutil = require('gulp-utils');
+const gutil = require('gulp-util');
 
 const { createVideoIFrame, getIframe, getNonSpecificSrc } = require('../utils');
 
