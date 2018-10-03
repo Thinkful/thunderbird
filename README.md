@@ -37,7 +37,7 @@ node -v # 6.10
 node thunderbird.js
 ```
 
-You'll probably want to run `thunderbird` from inside a curriclum directory. From inside a curriculum root directory root, you can build that curriculum by running:
+You'll probably want to run `thunderbird` from inside a curriclum directory. From inside a curriculum root directory, you can build that curriculum by running:
 
 ```sh
 node [~/path/to/thunderbird.js] --build-dir=content
