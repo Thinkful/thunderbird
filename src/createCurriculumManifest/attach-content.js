@@ -15,7 +15,7 @@ Q.fs = require('q-io/fs');
  *
  * @param {String} _path Full path to the current node's directory
  * @param {String} rootDir Root directory of the current node
- * @return {Promise} Promise to resolve to the for the node's content body
+ * @return {Promise} Resolves to the markdown for the node's content body
  */
 const getContentBody = (_path, rootDir) => {
   const markdownPath = path.resolve(_path, 'content.md');
@@ -50,7 +50,7 @@ const getContentBody = (_path, rootDir) => {
  * Return a Promise that resolves to the raw html for this node
  *
  * @param {String} _path Full path to the current node's directory
- * @return {Promise} Promise to resolve to the for the raw html
+ * @return {Promise} Resolves to the node's raw html
  */
 const getContentRaw = _path => {
   const contentPath = path.resolve(_path, 'content.html');
@@ -62,7 +62,7 @@ const getContentRaw = _path => {
  * Return a Promise that resolves to the parsed comprehension Qs for this node
  *
  * @param {String} _path Full path to the current node's directory
- * @return {Promise} Promise to resolve to the for the node's comprehension Qs
+ * @return {Promise} Resolves to the markdown for the node's comprehension Qs
  */
 const getContentComprehension = _path => {
   const comprehensionPath = path.resolve(_path, 'comprehension.md');
