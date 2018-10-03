@@ -7,6 +7,7 @@ const jqueryTarget =
 
 module.exports = $ => {
   $(jqueryTarget).each((_, el) => {
+    el = $(el);
     $(el).replaceWith(
       getExternalLink(el.attr('href'), el.text(), el.attr('alt'))
     );
