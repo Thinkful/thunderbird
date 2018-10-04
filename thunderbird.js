@@ -84,9 +84,11 @@ function runThunderbird() {
 
   /* Sets up Gulp output to stream into this process */
   var decoder = new StringDecoder('utf8');
+
   gulp.stdout.on('data', function(data) {
     process.stdout.write(decoder.write(data) + decoder.end());
   });
+
   gulp.stdout.on('end', function(data) {
     process.stdout.write(data ? decoder.write(data) + decoder.end() : '');
     console.log('****** Thunderbird gulp completed. ******\n');
