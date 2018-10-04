@@ -75,22 +75,22 @@ const createUUIDs = ($, options) => {
   const existingUUIDs = _.map($('[uuid]'), el => el.getAttribute('uuid'));
 
   // Initialize the UUID varialbe
-  let uid;
+  let uuid;
 
   while (node.length > 0) {
     // Get a new uuid
-    uid = UUID.v1();
+    uuid = UUID.v1();
 
     // If there's a collision with an existing UUID, retry
-    if (_.indexOf(existingUUIDs, uid) > -1) {
+    if (_.indexOf(existingUUIDs, uuid) > -1) {
       continue;
     }
 
     // Add add the new UUID to the node
-    node.attr('uuid', uid);
+    node.attr('uuid', uuid);
 
     // Add the new UUID to the list of UUIDs that exist
-    existingUUIDs.push(uid);
+    existingUUIDs.push(uuid);
 
     // Get the next node without a UUID (if any)
     node = getNextNode($);
