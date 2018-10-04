@@ -1,115 +1,162 @@
-var assert = require('assert');
+const _ = require('lodash');
+const beautify = require('js-beautify');
+const gutil = require('gulp-util');
+const through2 = require('through2');
+const UUID = require('node-uuid');
 
-var through2 = require('through2');
-var gutil = require('gulp-util');
-var PluginError = gutil.PluginError;
+const createDOM = require('./create-dom');
 
-var _ = require('lodash');
-var BeautifyHTML = require('js-beautify').html;
-var UUID = require('node-uuid');
-
-var createDOM = require('./create-dom');
+const { colors, File, log, PluginError } = gutil;
 
 const PLUGIN_NAME = 'gulp-populate-uuids';
 
-/**
- *  Whitelisted nodes where UUID's are added
- **/
-var uuidNodeWhitelist = ['unit', 'lesson', 'assignment'];
+// Whitelisted tags where UUIDs can be added
+const UUID_NODE_WHITE_LIST = ['unit', 'lesson', 'assignment', 'checkpoint'];
 
 function UUIDNotFoundException() {}
 
 /**
- * Assigns UUIDs where missing to an XML string
- * @param  {String} xmlStr The xml contents to ID
- * @return {String}        A string with the newly generated IDs
+ * Get the next node with no uuid
+ *
+ * @param {Object} $ The dom object to remove onboarding tage from
+ * @return {Object} First node object that has no UUID
  */
-var populate = function(xmlStr, options) {
-  var $ = createDOM(xmlStr);
+const getNextNode = $ =>
+  $(UUID_NODE_WHITE_LIST.join(','))
+    .not('[uuid]')
+    .first();
 
-  // Migration, remove onboarding tags from curricula
+/**
+ * Remove onboarding tags from curricula
+ *
+ * @param {Object} $ The jQuery DOM object to remove onboarding tags from
+ */
+const removeOnboarding = $ => {
   var $onboarding = $('onboarding');
+
   if ($onboarding.length) {
     $onboarding.remove();
-    gutil.log('Onboarding node removed from structure.xml');
+    log('Onboarding node removed from structure.xml');
   }
-
-  var existingUUIDs = _.map($('[uuid]'), function(el) {
-    return el.getAttribute('uuid');
-  });
-
-  var getNextNode = function() {
-    return $(uuidNodeWhitelist.join(','))
-      .not('[uuid]')
-      .first();
-  };
-
-  var node = getNextNode();
-  var uid;
-
-  if (options.strict === 'true' || options.strict === true) {
-    if (node.length > 0) {
-      var e = new UUIDNotFoundException();
-      e.message =
-        'Node ' +
-        node[0].nodeName +
-        ' with src=' +
-        node.attr('src') +
-        ' does not have a UUID.' +
-        '\n >> Run thunderbird locally and commit the UUID changes ' +
-        'into the repository';
-      throw e;
-    }
-  } else {
-    while (node.length > 0) {
-      uid = UUID.v1();
-      // If there is a collision with the existing UUIDs, retry
-      if (_.indexOf(existingUUIDs, uid) != -1) {
-        continue;
-      }
-
-      node.attr('uuid', uid);
-      existingUUIDs.push(uid);
-      node = getNextNode();
-    }
-  }
-
-  xmlStr = $('body').html();
-  return BeautifyHTML(xmlStr);
 };
 
-module.exports = function(options) {
-  return through2.obj(function(file, enc, done) {
-    gutil.log('UUIDs populating on:', gutil.colors.green(file.path));
+/**
+ * Throw an error if any node is missing a UUID
+ *
+ * @param {Object} $ jQuery DOM object to check for missing UUIDs
+ */
+const strictCheckUUIDs = $ => {
+  const node = getNextNode($);
 
+  if (node.length > 0) {
+    const e = new UUIDNotFoundException();
+    e.message =
+      `Node ${node[0].nodeName} with src=${node.attr('src')} ` +
+      `does not have a UUID.\n >> Run thunderbird locally and ` +
+      `commit the UUID changes into the repository`;
+    throw e;
+  }
+};
+
+/**
+ * Create UUIDs for any nodes that don't have any.
+ *
+ * If running in strict mode (options.strict is true or "true"), an error will
+ * be thrown if any node does not have a UUID already
+ *
+ * @param {Object} $ jQuery DOM object to create UUIDs for
+ * @param {Object} options { strict }
+ */
+const createUUIDs = ($, options) => {
+  // Get the first node with no UUID
+  let node = getNextNode($);
+
+  // Find all uuids that exist already in the DOM
+  const existingUUIDs = _.map($('[uuid]'), el => el.getAttribute('uuid'));
+
+  // Initialize the UUID varialbe
+  let uid;
+
+  while (node.length > 0) {
+    // Get a new uuid
+    uid = UUID.v1();
+
+    // If there's a collision with an existing UUID, retry
+    if (_.indexOf(existingUUIDs, uid) > -1) {
+      continue;
+    }
+
+    // Add add the new UUID to the node
+    node.attr('uuid', uid);
+
+    // Add the new UUID to the list of UUIDs that exist
+    existingUUIDs.push(uid);
+
+    // Get the next node without a UUID (if any)
+    node = getNextNode($);
+  }
+};
+
+/**
+ * Assigns UUIDs where missing to an XML string
+ *
+ * @param {String} xmlStr The xml contents to ID
+ * @param {Object} options { strict }
+ * @return {String} An xml string with the newly generated IDs included
+ */
+const populate = function(xmlStr, options) {
+  const $ = createDOM(xmlStr);
+
+  removeOnboarding($);
+
+  // Strict mode doesn't allow UUID creation, so return
+  if (options.strict.toString() === 'true') {
+    return strictCheckUUIDs($);
+  }
+
+  createUUIDs($);
+
+  // Turn the DOM back into a string of XML
+  const newXmlStr = $('body').html();
+
+  return beautify.html(newXmlStr);
+};
+
+module.exports = options =>
+  through2.obj(function(file, enc, done) {
+    log('UUIDs populating on:', colors.green(file.path));
+
+    // Handle file does not exists
     if (file.isNull()) {
       return done(null, file);
     }
 
+    // No support for file stream
     if (file.isStream()) {
-      return done(
-        new PluginError('gulp-populate-uuids', 'Streaming not supported')
-      );
+      return done(new PluginError(PLUGIN_NAME, 'Streaming not supported'));
     }
 
-    var originalXml = file.contents.toString('utf8');
-    var xmlStr;
+    // Get the file contents as a string
+    const originalXml = file.contents.toString('utf8');
+
+    let newXml = originalXml;
+
+    // Handle error coming from missing UUIDs in strict mode
     try {
-      xmlStr = populate(originalXml, options);
+      newXml = populate(originalXml, options);
     } catch (e) {
-      gutil.log(gutil.colors.red('Strict UUID Check Failed: ' + e.message));
-      return done(
-        new PluginError('gulp-populate-uuids', 'Strict UUID Check Failed.')
-      );
+      const errorMessage = 'Strict UUID Check Failed';
+      log(colors.red(`${errorMessage}: ${e.message}`));
+      return done(new PluginError(PLUGIN_NAME, errorMessage));
     }
 
+    // Replace the old file with the new one
     this.push(
-      new gutil.File({
+      new File({
         path: file.path,
-        contents: new Buffer(xmlStr),
+        contents: new Buffer(newXml),
       })
     );
 
     done();
   });
-};
