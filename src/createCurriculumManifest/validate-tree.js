@@ -24,7 +24,7 @@ var validateNode = function(node) {
 
   // Warn in case there is no node name
   if (_.isEmpty(node.name)) {
-    log('Warning: Unnamed node ' + node.type + '. uuid=' + node.uuid);
+    log.warn('Warning: Unnamed node ' + node.type + '. uuid=' + node.uuid);
   }
 
   // Error out in case there is no uuid

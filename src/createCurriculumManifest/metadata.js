@@ -114,11 +114,13 @@ function qRead(node, _path) {
         metadataYAML = YAML.safeDump(parsed.attributes);
       } catch (e) {
         log(
-          colors.red('Metadata'),
-          'error serializing back to YAML, please inspect:',
-          colors.yellow(path.basename(_path))
+          `${colors.red(
+            'Metadata'
+          )} error serializing back to YAML please inspect: ${colors.yellow(
+            path.basename(_path)
+          )}`
         );
-        log('\n\n', colors.yellow(e.message));
+        log(`\n\n ${colors.yellow(e.message)}`);
 
         return Q.reject(e);
       }
@@ -164,10 +166,8 @@ function qRead(node, _path) {
       }
     })
     .catch(function() {
-      log.error(
-        colors.yellow('Caution'),
-        'No syllabus metadata at',
-        syllabusPath
+      log.warn(
+        `${colors.yellow('Caution')} No syllabus metadata at ${syllabusPath}`
       );
     });
 

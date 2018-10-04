@@ -94,6 +94,10 @@ function runThunderbird() {
     console.log('****** Thunderbird gulp completed. ******\n');
   });
 
+  gulp.stderr.on('data', function(data) {
+    process.stdout.write(decoder.write(data) + decoder.end());
+  });
+
   /* Sets up propagation of Gulp's exit() into this process */
   gulp.on('exit', function(code) {
     if (code != 0) {

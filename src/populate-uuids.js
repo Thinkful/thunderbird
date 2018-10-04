@@ -141,7 +141,7 @@ module.exports = options => {
       // Get the file contents as a string
       const originalXml = file.contents.toString('utf8');
 
-      let newXml = originalXml;
+      let newXml;
 
       // Handle error coming from missing UUIDs in strict mode
       try {
