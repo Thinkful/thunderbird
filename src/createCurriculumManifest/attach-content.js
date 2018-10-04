@@ -1,61 +1,101 @@
-var path = require('path');
+const _ = require('lodash');
+const gutil = require('gulp-util');
+const path = require('path');
+const Q = require('q');
 
-var utils = require('../utils');
-var gutil = require('gulp-util');
+const utils = require('../utils');
+const parseMarkdown = require('./parse-markdown');
 
-var _ = require('lodash');
-
-var Q = require('q');
+// Add file system support to Q
 Q.fs = require('q-io/fs');
 
-var parseMarkdown = require('./parse-markdown');
+/**
+ * Return a Promise that resolves to the result from parsing the content
+ * markdown for this node.
+ *
+ * @param {String} _path Full path to the current node's directory
+ * @param {String} rootDir Root directory of the current node
+ * @return {Promise} Resolves to the markdown for the node's content body
+ */
+const getContentBody = (_path, rootDir) => {
+  const markdownPath = path.resolve(_path, 'content.md');
+  const relPath = markdownPath.replace(rootDir, '.');
 
-module.exports = function(rootDir) {
-  return function(node) {
-    // Quits if not src attribute is present
-    if (_.isEmpty(node.src)) {
-      return Q.when(true);
-    }
+  return Q.fs
+    .read(markdownPath)
+    .then(parseMarkdown({ processMarkdown: true }))
+    .catch(err => {
+      // Handle content.md not found
+      if (err.code === 'ENOENT') {
+        gutil.log('Warning:', gutil.colors.yellow(relPath), 'not found');
+        return;
+      }
 
-    var _path = path.resolve(rootDir, node.src);
-    var markdownPath = path.resolve(_path, 'content.md');
-    var relPath = markdownPath.replace(rootDir, '.');
+      // Handle error parsing content.md's metadata
+      if (err.front_matter_error) {
+        gutil.log('Error parsing front matter in:');
+        gutil.log(gutil.colors.yellow(markdownPath));
+        gutil.log(err.front_matter_error);
+        utils.fail();
+      }
 
-    node.content = {};
-    return Q.allSettled([
-      Q.fs
-        .read(markdownPath)
-        .then(parseMarkdown({ processMarkdown: true }))
-        .catch(function(err) {
-          if (err.code === 'ENOENT') {
-            gutil.log('Warning:', gutil.colors.yellow(relPath), 'not found');
-            return;
-          }
-          if (err.front_matter_error) {
-            gutil.log('Error parsing front matter in:');
-            gutil.log(gutil.colors.yellow(markdownPath));
-            gutil.log(err.front_matter_error);
-            utils.fail();
-          }
-          gutil.log(gutil.colors.yellow('Unrecognized error!'));
-          gutil.log(err);
-        })
-        .then(function(parsed) {
-          node.content.body = parsed.body;
-        }),
+      // Handle unknown errors
+      gutil.log(gutil.colors.yellow('Unrecognized error!'));
+      gutil.log(err);
+    })
+    .then(parsed => parsed.body);
+};
 
-      Q.fs.read(path.resolve(_path, 'content.html')).then(function(str) {
-        node.content.raw = str;
-      }),
+/**
+ * Return a Promise that resolves to the raw html for this node
+ *
+ * @param {String} _path Full path to the current node's directory
+ * @return {Promise} Resolves to the node's raw html
+ */
+const getContentRaw = _path => {
+  const contentPath = path.resolve(_path, 'content.html');
 
-      Q.fs
-        .read(path.resolve(_path, 'comprehension.md'))
-        .then(parseMarkdown({ processMarkdown: true }))
-        .then(function(str) {
-          if (str && str.body) {
-            node.content.comprehension = str.body;
-          }
-        }),
-    ]);
-  };
+  return Q.fs.read(contentPath);
+};
+
+/**
+ * Return a Promise that resolves to the parsed comprehension Qs for this node
+ *
+ * @param {String} _path Full path to the current node's directory
+ * @return {Promise} Resolves to the markdown for the node's comprehension Qs
+ */
+const getContentComprehension = _path => {
+  const comprehensionPath = path.resolve(_path, 'comprehension.md');
+
+  return Q.fs
+    .read(comprehensionPath)
+    .then(parseMarkdown({ processMarkdown: true }))
+    .then(str => (str && str.body ? str.body : null));
+};
+
+module.exports = rootDir => node => {
+  // Quit if src attribute isn't present
+  if (_.isEmpty(node.src)) {
+    return Q.when(true);
+  }
+
+  const _path = path.resolve(rootDir, node.src);
+
+  node.content = {};
+
+  return Q.allSettled([
+    getContentBody(_path, rootDir).then(contentBody => {
+      node.content.body = contentBody;
+    }),
+
+    getContentRaw(_path).then(contentRaw => {
+      node.content.raw = contentRaw;
+    }),
+
+    getContentComprehension(_path).then(contentComprehension => {
+      if (contentComprehension) {
+        node.content.comprehension = contentComprehension;
+      }
+    }),
+  ]);
 };
