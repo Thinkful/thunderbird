@@ -20,7 +20,7 @@ module.exports = $ => {
   const rogueCodepen = $('codepen').first();
 
   if (rogueCodepen.length) {
-    log(
+    log.warn(
       colors.yellow(
         `Warning: There seems to be a rogue codepen tag: ${rogueCodepen}`
       )

@@ -28,15 +28,15 @@ const getContentBody = (_path, rootDir) => {
     .catch(err => {
       // Handle content.md not found
       if (err.code === 'ENOENT') {
-        log(`Warning: ${colors.yellow(relPath)} not found`);
+        log.warn(`Warning: ${colors.yellow(relPath)} not found`);
         return;
       }
 
       // Handle error parsing content.md's metadata
       if (err.front_matter_error) {
-        log('Error parsing front matter in:');
-        log(colors.yellow(markdownPath));
-        log(err.front_matter_error);
+        log.error('Error parsing front matter in:');
+        log.error(colors.red(markdownPath));
+        log.error(err.front_matter_error);
         utils.fail();
       }
 

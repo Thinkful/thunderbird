@@ -25,7 +25,9 @@ module.exports = function validateHtml(html, filename) {
   var parser = new htmlparser.Parser({
     onopentag: function(name, attrs) {
       if (_.indexOf(allowedTags, name) === -1) {
-        log(`Warning: Unusual HTML Tag' ${colors.yellow(name)} in ${filename}`);
+        log.warn(
+          `Warning: Unusual HTML Tag' ${colors.yellow(name)} in ${filename}`
+        );
       }
     },
   });

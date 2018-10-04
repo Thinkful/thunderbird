@@ -32,8 +32,12 @@ var validateNode = function(node) {
     _.isEmpty(node.root.$(node.element).attr('uuid')) &&
     node.type != 'course'
   ) {
-    log(`Warning: Empty uuid on ${colors.red(node.type)} with src=${node.src}`);
-    log(colors.red('Remove and generate a new one, or find removed UUID.'));
+    log.error(
+      `Error: Empty uuid on ${colors.red(node.type)} with src=${node.src}`
+    );
+    log.error(
+      colors.red('Remove and generate a new one, or find removed UUID.')
+    );
     utils.fail();
   }
 

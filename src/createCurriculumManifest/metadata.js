@@ -129,17 +129,17 @@ function qRead(node, _path) {
       );
 
       return QFS.write(contentPath, validatedContents).catch(function() {
-        log(colors.red('Error'), 'trying to write', contentPath);
+        log.error(colors.red('Error'), 'trying to write', contentPath);
       });
     })
     .catch(function() {
-      log(colors.red('Error'), 'trying to read', contentPath);
+      log.error(colors.red('Error'), 'trying to read', contentPath);
     });
 
   syllabus = QFS.read(syllabusPath)
     .then(function(syllabus) {
       if (_.isEmpty(syllabus)) {
-        log('Warning: No syllabus.yaml file found');
+        log.warn('Warning: No syllabus.yaml file found');
         return;
       }
 
@@ -148,21 +148,27 @@ function qRead(node, _path) {
         _.merge(node, { syllabus: syllabus });
 
         log(
-          colors.green('Syllabus'),
-          'included for',
-          colors.blue(path.basename(_path))
+          `${colors.green('Syllabus')} included for ${colors.blue(
+            path.basename(_path)
+          )}`
         );
       } catch (e) {
-        log(
-          colors.red('Syllabus'),
-          'has invalid YAML, please correct:',
-          colors.yellow(path.basename(_path))
+        log.error(
+          `${colors.red(
+            'Syllabus'
+          )} has invalid YAML, please correct: ${colors.yellow(
+            path.basename(_path)
+          )}`
         );
-        log('\n\n', colors.yellow(e.message));
+        log.error('\n\n', colors.red(e.message));
       }
     })
     .catch(function() {
-      log(colors.yellow('Caution'), 'No syllabus metadata at', syllabusPath);
+      log.error(
+        colors.yellow('Caution'),
+        'No syllabus metadata at',
+        syllabusPath
+      );
     });
 
   return Q.allSettled([metadata, syllabus]);
@@ -179,10 +185,8 @@ var setMetadata = (module.exports = function setMetadata(rootDir) {
     if (_.isEmpty(node.src)) {
       if (node.type != 'course') {
         // All elements except <course> should have an src attribute!
-        log(
-          'Warning: Element',
-          colors.yellow(node.type),
-          'has no src= attribute'
+        log.warn(
+          `Warning: Element ${colors.yellow(node.type)} has no src= attribute`
         );
       }
       return Q.when(true);

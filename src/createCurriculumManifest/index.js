@@ -113,6 +113,6 @@ module.exports = function(options) {
         });
     });
   } catch (e) {
-    log(colors.red(e));
+    log.error(colors.red(e));
   }
 };

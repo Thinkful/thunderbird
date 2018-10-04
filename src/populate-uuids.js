@@ -148,7 +148,7 @@ module.exports = options => {
         newXml = populate(originalXml, options);
       } catch (e) {
         const errorMessage = 'Strict UUID Check Failed';
-        log(colors.red(`${errorMessage}: ${e.message}`));
+        log.error(colors.red(`${errorMessage}: ${e.message}`));
         return done(new PluginError(PLUGIN_NAME, errorMessage));
       }
 
@@ -163,6 +163,6 @@ module.exports = options => {
       done();
     });
   } catch (e) {
-    log(colors.red(e));
+    log.error(colors.red(e));
   }
 };

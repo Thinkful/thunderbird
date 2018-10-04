@@ -17,7 +17,7 @@ module.exports = $ => {
   const rogueYoutube = $('youtube').first();
 
   if (rogueYoutube.length) {
-    log(
+    log.warn(
       colors.yellow(
         `Warning: There seems to be a rogue youtube tag: ${rogueYoutube}`
       )
