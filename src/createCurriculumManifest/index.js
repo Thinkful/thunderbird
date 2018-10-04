@@ -16,101 +16,104 @@ var validateTree = require('./validate-tree');
 const PLUGIN_NAME = 'gulp-create-curriculum-manifest';
 
 module.exports = function(options) {
-  options = options || {};
-  options.filename = options.filename || 'curriculum.json';
+  try {
+    options = options || {};
+    options.filename = options.filename || 'curriculum.json';
 
-  return through2.obj(function(file, enc, done) {
-    if (file.isNull()) {
-      return done(null, file);
-    }
+    return through2.obj(function(file, enc, done) {
+      if (file.isNull()) {
+        return done(null, file);
+      }
 
-    if (file.isStream()) {
-      return done(new PluginError(PLUGIN_NAME, 'Streaming not supported'));
-    }
+      if (file.isStream()) {
+        return done(new PluginError(PLUGIN_NAME, 'Streaming not supported'));
+      }
 
-    var rootDir = path.dirname(file.path);
+      var rootDir = path.dirname(file.path);
 
-    var operationsPerNode = [
-      // Attaches metadata from structure.xml,
-      // including legacy structures / intro / contents etc
-      setMetadata(rootDir),
+      var operationsPerNode = [
+        // Attaches metadata from structure.xml,
+        // including legacy structures / intro / contents etc
+        setMetadata(rootDir),
 
-      // Attaches metadata from content.md files
-      // Attaches course body from content.md, content.html
-      // Attaches comprehension content from comprehension.md
-      attachContent(rootDir),
-    ];
+        // Attaches metadata from content.md files
+        // Attaches course body from content.md, content.html
+        // Attaches comprehension content from comprehension.md
+        attachContent(rootDir),
+      ];
 
-    var treePromise = buildTree(file, operationsPerNode);
+      var treePromise = buildTree(file, operationsPerNode);
 
-    /*
+      /*
             TODO include root node in content selection, excluding is a
                 legacy concern needed to account for the inclusion of metadata
                 as part of the structure.xml
          */
-    var stream = this;
-    treePromise
-      // validate the output!
-      .then(validateTree)
+      var stream = this;
+      treePromise
+        // validate the output!
+        .then(validateTree)
 
-      // then we're done! Save the curriculum.json file.
-      .then(
-        function(treeRoot) {
-          gutil.log('Thinkdown compilation completed.');
+        // then we're done! Save the curriculum.json file.
+        .then(
+          function(treeRoot) {
+            gutil.log('Thinkdown compilation completed.');
 
-          var indent = process.env.target === 'production' ? 0 : 4;
+            var indent = process.env.target === 'production' ? 0 : 4;
+            // curriculum.json
+            stream.push(
+              new gutil.File({
+                path: path.resolve(rootDir, options.filename),
+                contents: new Buffer(
+                  JSON.stringify(treeRoot.toJSON(), null, indent) + '\n'
+                ),
+              })
+            );
 
-          // curriculum.json
-          stream.push(
-            new gutil.File({
-              path: path.resolve(rootDir, options.filename),
-              contents: new Buffer(
-                JSON.stringify(treeRoot.toJSON(), null, indent) + '\n'
-              ),
-            })
-          );
+            // syllabus.json
+            var syllabus = new TT(treeRoot.toJSON());
+            _.each(syllabus.preOrderTraverse(), function(n) {
+              delete n.author;
+              delete n.content;
 
-          // syllabus.json
-          var syllabus = new TT(treeRoot.toJSON());
-          _.each(syllabus.preOrderTraverse(), function(n) {
-            delete n.author;
-            delete n.content;
+              delete n.src;
+              delete n.uuid;
 
-            delete n.src;
-            delete n.uuid;
+              if (_.isEmpty(n.children)) {
+                delete n.children;
+              }
+              delete n.parent;
+              delete n.root;
 
-            if (_.isEmpty(n.children)) {
-              delete n.children;
-            }
-            delete n.parent;
-            delete n.root;
+              delete n.element;
+              delete n.getPromise;
+            });
 
-            delete n.element;
-            delete n.getPromise;
-          });
+            stream.push(
+              new gutil.File({
+                path: path.resolve(rootDir, 'syllabus.json'),
+                contents: new Buffer(
+                  JSON.stringify(syllabus.toJSON(), null, indent) + '\n'
+                ),
+              })
+            );
 
-          stream.push(
-            new gutil.File({
-              path: path.resolve(rootDir, 'syllabus.json'),
-              contents: new Buffer(
-                JSON.stringify(syllabus.toJSON(), null, indent) + '\n'
-              ),
-            })
-          );
-
-          done();
-        },
-        function() {
-          gutil.log('Tree building error!');
-          done(new PluginError(PLUGIN_NAME, 'Error building tree'));
-        }
-      )
-      .catch(function(e) {
-        gutil.log('Tree building error! *');
-        if (e.stack) {
-          gutil.log(gutil.colors.red(e.stack));
-        }
-        done(new PluginError(PLUGIN_NAME, 'Error caught'));
-      });
-  });
+            done();
+          },
+          function() {
+            gutil.log('Tree building error!');
+            done(new PluginError(PLUGIN_NAME, 'Error building tree'));
+          }
+        )
+        .catch(function(e) {
+          gutil.log('Tree building error! *');
+          if (e.stack) {
+            gutil.log(gutil.colors.red(e.stack));
+          }
+          done(new PluginError(PLUGIN_NAME, 'Error caught'));
+        });
+    });
+  } catch (e) {
+    gutil.log(gutil.colors.red(e));
+  }
 };
