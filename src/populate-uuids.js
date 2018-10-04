@@ -122,41 +122,46 @@ const populate = function(xmlStr, options) {
   return beautify.html(newXmlStr);
 };
 
-module.exports = options =>
-  through2.obj(function(file, enc, done) {
-    log('UUIDs populating on:', colors.green(file.path));
+module.exports = options => {
+  try {
+    return through2.obj(function(file, enc, done) {
+      log('UUIDs populating on:', colors.green(file.path));
 
-    // Handle file does not exists
-    if (file.isNull()) {
-      return done(null, file);
-    }
+      // Handle file does not exists
+      if (file.isNull()) {
+        return done(null, file);
+      }
 
-    // No support for file stream
-    if (file.isStream()) {
-      return done(new PluginError(PLUGIN_NAME, 'Streaming not supported'));
-    }
+      // No support for file stream
+      if (file.isStream()) {
+        return done(new PluginError(PLUGIN_NAME, 'Streaming not supported'));
+      }
 
-    // Get the file contents as a string
-    const originalXml = file.contents.toString('utf8');
+      // Get the file contents as a string
+      const originalXml = file.contents.toString('utf8');
 
-    let newXml = originalXml;
+      let newXml = originalXml;
 
-    // Handle error coming from missing UUIDs in strict mode
-    try {
-      newXml = populate(originalXml, options);
-    } catch (e) {
-      const errorMessage = 'Strict UUID Check Failed';
-      log(colors.red(`${errorMessage}: ${e.message}`));
-      return done(new PluginError(PLUGIN_NAME, errorMessage));
-    }
+      // Handle error coming from missing UUIDs in strict mode
+      try {
+        newXml = populate(originalXml, options);
+      } catch (e) {
+        const errorMessage = 'Strict UUID Check Failed';
+        log(colors.red(`${errorMessage}: ${e.message}`));
+        return done(new PluginError(PLUGIN_NAME, errorMessage));
+      }
 
-    // Replace the old file with the new one
-    this.push(
-      new File({
-        path: file.path,
-        contents: new Buffer(newXml),
-      })
-    );
+      // Replace the old file with the new one
+      this.push(
+        new File({
+          path: file.path,
+          contents: new Buffer(newXml),
+        })
+      );
 
-    done();
-  });
+      done();
+    });
+  } catch (e) {
+    log(e);
+  }
+};
