@@ -1,12 +1,13 @@
 const _ = require('lodash');
 const beautify = require('js-beautify');
-const gutil = require('gulp-util');
+const colors = require('ansi-colors');
+const log = require('fancy-log');
+const PluginError = require('plugin-error');
 const through2 = require('through2');
 const UUID = require('node-uuid');
+const Vinyl = require('vinyl');
 
 const createDOM = require('./create-dom');
-
-const { colors, File, log, PluginError } = gutil;
 
 const PLUGIN_NAME = 'gulp-populate-uuids';
 
@@ -125,7 +126,7 @@ const populate = function(xmlStr, options) {
 module.exports = options => {
   try {
     return through2.obj(function(file, enc, done) {
-      log('UUIDs populating on:', colors.green(file.path));
+      log(`UUIDs populating on: ${colors.green(file.path)}`);
 
       // Handle file does not exists
       if (file.isNull()) {
@@ -153,7 +154,7 @@ module.exports = options => {
 
       // Replace the old file with the new one
       this.push(
-        new File({
+        new Vinyl({
           path: file.path,
           contents: new Buffer(newXml),
         })

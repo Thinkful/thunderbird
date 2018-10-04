@@ -1,13 +1,16 @@
 const _ = require('lodash');
-const gutil = require('gulp-util');
+const colors = require('ansi-colors');
+const log = require('fancy-log');
 
 const { createVideoIFrame, getIframe, getNonSpecificSrc } = require('../utils');
 
 const aframeChain = ($, el) => {
   let source = el.getAttribute('src');
   const example = `<aframe src="${source}"></aframe>`;
-  gutil.log(
-    `Deprecation: Aframes like this will not be supported soon: ${example}`
+  log(
+    colors.yellow(
+      `Deprecation: Aframes like this will not be supported soon: ${example}`
+    )
   );
 
   let replacementEl;

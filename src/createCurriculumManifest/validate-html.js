@@ -1,6 +1,7 @@
 var _ = require('lodash');
+const colors = require('ansi-colors');
 var htmlparser = require('htmlparser2');
-var gutil = require('gulp-util');
+const log = require('fancy-log');
 
 /*
  * Allowed html tags in the final output of Thunderbird.
@@ -24,12 +25,7 @@ module.exports = function validateHtml(html, filename) {
   var parser = new htmlparser.Parser({
     onopentag: function(name, attrs) {
       if (_.indexOf(allowedTags, name) === -1) {
-        gutil.log(
-          'Warning: Unusual HTML Tag',
-          gutil.colors.yellow(name),
-          'in',
-          filename
-        );
+        log(`Warning: Unusual HTML Tag' ${colors.yellow(name)} in ${filename}`);
       }
     },
   });

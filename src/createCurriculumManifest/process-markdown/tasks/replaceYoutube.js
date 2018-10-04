@@ -1,4 +1,5 @@
-const gutil = require('gulp-util');
+const colors = require('ansi-colors');
+const log = require('fancy-log');
 
 const { getNonSpecificSrc } = require('../utils');
 
@@ -16,8 +17,10 @@ module.exports = $ => {
   const rogueYoutube = $('youtube').first();
 
   if (rogueYoutube.length) {
-    gutil.log(
-      `Warning: There seems to be a rogue youtube tag: ${rogueYoutube}`
+    log(
+      colors.yellow(
+        `Warning: There seems to be a rogue youtube tag: ${rogueYoutube}`
+      )
     );
   }
 };
