@@ -162,6 +162,6 @@ module.exports = options => {
       done();
     });
   } catch (e) {
-    log(e);
+    log(colors.red(e));
   }
 };

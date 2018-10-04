@@ -114,6 +114,6 @@ module.exports = function(options) {
         });
     });
   } catch (e) {
-    gutil.log(e);
+    gutil.log(gutil.colors.red(e));
   }
 };
