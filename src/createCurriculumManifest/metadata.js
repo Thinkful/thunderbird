@@ -1,8 +1,9 @@
 'use strict';
 var path = require('path');
+const colors = require('ansi-colors');
+const log = require('fancy-log');
 
 var _ = require('lodash');
-var gutil = require('gulp-util');
 
 var Q = require('q');
 var QFS = require('q-io/fs');
@@ -112,12 +113,14 @@ function qRead(node, _path) {
       try {
         metadataYAML = YAML.safeDump(parsed.attributes);
       } catch (e) {
-        gutil.log(
-          gutil.colors.red('Metadata'),
-          'error serializing back to YAML, please inspect:',
-          gutil.colors.yellow(path.basename(_path))
+        log(
+          `${colors.red(
+            'Metadata'
+          )} error serializing back to YAML please inspect: ${colors.yellow(
+            path.basename(_path)
+          )}`
         );
-        gutil.log('\n\n', gutil.colors.yellow(e.message));
+        log(`\n\n ${colors.yellow(e.message)}`);
 
         return Q.reject(e);
       }
@@ -128,17 +131,17 @@ function qRead(node, _path) {
       );
 
       return QFS.write(contentPath, validatedContents).catch(function() {
-        gutil.log(gutil.colors.red('Error'), 'trying to write', contentPath);
+        log.error(colors.red('Error'), 'trying to write', contentPath);
       });
     })
     .catch(function() {
-      gutil.log(gutil.colors.red('Error'), 'trying to read', contentPath);
+      log.error(colors.red('Error'), 'trying to read', contentPath);
     });
 
   syllabus = QFS.read(syllabusPath)
     .then(function(syllabus) {
       if (_.isEmpty(syllabus)) {
-        gutil.log('Warning: No syllabus.yaml file found');
+        log.warn('Warning: No syllabus.yaml file found');
         return;
       }
 
@@ -146,25 +149,25 @@ function qRead(node, _path) {
         syllabus = YAML.safeLoad(syllabus);
         _.merge(node, { syllabus: syllabus });
 
-        gutil.log(
-          gutil.colors.green('Syllabus'),
-          'included for',
-          gutil.colors.blue(path.basename(_path))
+        log(
+          `${colors.green('Syllabus')} included for ${colors.blue(
+            path.basename(_path)
+          )}`
         );
       } catch (e) {
-        gutil.log(
-          gutil.colors.red('Syllabus'),
-          'has invalid YAML, please correct:',
-          gutil.colors.yellow(path.basename(_path))
+        log.error(
+          `${colors.red(
+            'Syllabus'
+          )} has invalid YAML, please correct: ${colors.yellow(
+            path.basename(_path)
+          )}`
         );
-        gutil.log('\n\n', gutil.colors.yellow(e.message));
+        log.error('\n\n', colors.red(e.message));
       }
     })
     .catch(function() {
-      gutil.log(
-        gutil.colors.yellow('Caution'),
-        'No syllabus metadata at',
-        syllabusPath
+      log.warn(
+        `${colors.yellow('Caution')} No syllabus metadata at ${syllabusPath}`
       );
     });
 
@@ -182,10 +185,8 @@ var setMetadata = (module.exports = function setMetadata(rootDir) {
     if (_.isEmpty(node.src)) {
       if (node.type != 'course') {
         // All elements except <course> should have an src attribute!
-        gutil.log(
-          'Warning: Element',
-          gutil.colors.yellow(node.type),
-          'has no src= attribute'
+        log.warn(
+          `Warning: Element ${colors.yellow(node.type)} has no src= attribute`
         );
       }
       return Q.when(true);

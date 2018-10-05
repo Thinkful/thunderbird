@@ -1,10 +1,12 @@
-var spawn = require('child_process').spawn;
-var StringDecoder = require('string_decoder').StringDecoder;
-var decoder = new StringDecoder('utf8');
-var semver = require('semver');
-var request = require('request');
+const spawn = require('child_process').spawn;
+const log = require('fancy-log');
+const request = require('request');
+const semver = require('semver');
+const { StringDecoder } = require('string_decoder');
 
-var runIfLatest = function(run) {
+const decoder = new StringDecoder('utf8');
+
+const runIfLatest = function(run) {
   var packageJson = require('./../package.json');
   var localVersion = packageJson['version'];
   var packageName = packageJson['name'];
@@ -39,7 +41,7 @@ var runIfLatest = function(run) {
           npmProc.stderr.on('end', handler);
 
           npmProc.on('error', function(errorino) {
-            console.log('Encountered error:', errorino);
+            log.error('Encountered error:', errorino);
           });
 
           npmProc.on('exit', function(code) {
@@ -53,9 +55,7 @@ var runIfLatest = function(run) {
           run();
         }
       } else {
-        console.log(
-          'Warning: unable to connect to npm. Skipping version check.'
-        );
+        log.warn('Warning: unable to connect to npm. Skipping version check.');
         run();
       }
     }

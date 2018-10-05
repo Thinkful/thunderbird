@@ -1,11 +1,12 @@
-var gutil = require('gulp-util');
+const colors = require('ansi-colors');
+const log = require('fancy-log');
 
 module.exports = {
   fail: function() {
-    gutil.log(gutil.colors.bgRed(' ☢ Thunderbird Failed!    ☢ '));
-    gutil.log(gutil.colors.bgRed(' ☢   Thunderbird Failed!  ☢ '));
-    gutil.log(gutil.colors.bgRed(' ☢     Thunderbird Failed!☢ '));
-    gutil.log('Exiting.');
+    log(colors.bgRed(' ☢ Thunderbird Failed!    ☢ '));
+    log(colors.bgRed(' ☢   Thunderbird Failed!  ☢ '));
+    log(colors.bgRed(' ☢     Thunderbird Failed!☢ '));
+    log('Exiting.');
     process.exit(1);
   },
 };

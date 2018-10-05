@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var utils = require('../utils');
-var gutil = require('gulp-util');
+const colors = require('ansi-colors');
+const log = require('fancy-log');
 
 var validateHtml = require('./validate-html');
 
@@ -23,7 +24,7 @@ var validateNode = function(node) {
 
   // Warn in case there is no node name
   if (_.isEmpty(node.name)) {
-    gutil.log('Warning: Unnamed node ' + node.type + '. uuid=' + node.uuid);
+    log.warn(`Warning: Unnamed node ${node.type}. uuid=${node.uuid}`);
   }
 
   // Error out in case there is no uuid
@@ -31,14 +32,11 @@ var validateNode = function(node) {
     _.isEmpty(node.root.$(node.element).attr('uuid')) &&
     node.type != 'course'
   ) {
-    gutil.log(
-      'Warning: Empty uuid on ' +
-        gutil.colors.red(node.type) +
-        ' with src=' +
-        node.src
+    log.error(
+      `Error: Empty uuid on ${colors.red(node.type)} with src=${node.src}`
     );
-    gutil.log(
-      gutil.colors.red('Remove and generate a new one, or find removed UUID.')
+    log.error(
+      colors.red('Remove and generate a new one, or find removed UUID.')
     );
     utils.fail();
   }

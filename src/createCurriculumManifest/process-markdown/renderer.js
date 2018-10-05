@@ -1,4 +1,5 @@
-const gutil = require('gulp-util');
+const colors = require('ansi-colors');
+const log = require('fancy-log');
 const marked = require('marked');
 const hljs = require('highlight.js');
 
@@ -21,7 +22,7 @@ renderer.code = (code, lang) => {
       codeHtml = hljs.highlightAuto(code).value;
     }
   } catch (e) {
-    gutil.log(gutil.colors.yellow('Highlight error!', e));
+    log(colors.yellow('Highlight error!', e));
   }
 
   return `<pre class="hljs" ng-non-bindable>${codeHtml}</pre>`;

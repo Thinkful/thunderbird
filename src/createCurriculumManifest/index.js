@@ -1,17 +1,16 @@
-var path = require('path');
+const _ = require('lodash');
+const colors = require('ansi-colors');
+const log = require('fancy-log');
+const path = require('path');
+const PluginError = require('plugin-error');
+const TT = require('thin-tree');
+const through2 = require('through2');
+const Vinyl = require('vinyl');
 
-var through2 = require('through2');
-var gutil = require('gulp-util');
-var PluginError = gutil.PluginError;
-
-var _ = require('lodash');
-
-var TT = require('thin-tree');
-
-var buildTree = require('./build-tree');
-var attachContent = require('./attach-content');
-var setMetadata = require('./metadata');
-var validateTree = require('./validate-tree');
+const buildTree = require('./build-tree');
+const attachContent = require('./attach-content');
+const setMetadata = require('./metadata');
+const validateTree = require('./validate-tree');
 
 const PLUGIN_NAME = 'gulp-create-curriculum-manifest';
 
@@ -57,12 +56,12 @@ module.exports = function(options) {
         // then we're done! Save the curriculum.json file.
         .then(
           function(treeRoot) {
-            gutil.log('Thinkdown compilation completed.');
+            log('Thinkdown compilation completed.');
 
             var indent = process.env.target === 'production' ? 0 : 4;
             // curriculum.json
             stream.push(
-              new gutil.File({
+              new Vinyl({
                 path: path.resolve(rootDir, options.filename),
                 contents: new Buffer(
                   JSON.stringify(treeRoot.toJSON(), null, indent) + '\n'
@@ -90,7 +89,7 @@ module.exports = function(options) {
             });
 
             stream.push(
-              new gutil.File({
+              new Vinyl({
                 path: path.resolve(rootDir, 'syllabus.json'),
                 contents: new Buffer(
                   JSON.stringify(syllabus.toJSON(), null, indent) + '\n'
@@ -101,19 +100,19 @@ module.exports = function(options) {
             done();
           },
           function() {
-            gutil.log('Tree building error!');
+            log(colors.red('Tree building error!'));
             done(new PluginError(PLUGIN_NAME, 'Error building tree'));
           }
         )
         .catch(function(e) {
-          gutil.log('Tree building error! *');
+          log(colors.red('Tree building error! *'));
           if (e.stack) {
-            gutil.log(gutil.colors.red(e.stack));
+            log(colors.red(e.stack));
           }
           done(new PluginError(PLUGIN_NAME, 'Error caught'));
         });
     });
   } catch (e) {
-    gutil.log(gutil.colors.red(e));
+    log.error(colors.red(e));
   }
 };

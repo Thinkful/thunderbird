@@ -1,12 +1,13 @@
-var del = require('del');
-var gulp = require('gulp');
-var gutil = require('gulp-util');
-var filter = require('gulp-filter');
-var flatten = require('gulp-flatten');
-var nodemon = require('gulp-nodemon');
+const del = require('del');
+const colors = require('ansi-colors');
+const filter = require('gulp-filter');
+const flatten = require('gulp-flatten');
+const gulp = require('gulp');
+const log = require('fancy-log');
+const nodemon = require('gulp-nodemon');
 
-var createCurriculumManifest = require('./src/createCurriculumManifest');
-var populateUUIDs = require('./src/populate-uuids');
+const createCurriculumManifest = require('./src/createCurriculumManifest');
+const populateUUIDs = require('./src/populate-uuids');
 
 /* Configuration */
 var argv = require('yargs').argv;
@@ -64,8 +65,8 @@ gulp.task('tree', function() {
 });
 
 gulp.task('info', function() {
-  gutil.log('Source path:', gutil.colors.green(paths.source));
-  gutil.log('Build path:', gutil.colors.green(paths.build));
+  log(`Source path: ${colors.green(paths.source)}`);
+  log(`Build path: ${colors.green(paths.build)}`);
 });
 
 gulp.task('clean', del.bind(null, [paths.build]));

@@ -1,5 +1,6 @@
 const _ = require('lodash');
-const gutil = require('gulp-util');
+const colors = require('ansi-colors');
+const log = require('fancy-log');
 const path = require('path');
 const Q = require('q');
 
@@ -27,21 +28,21 @@ const getContentBody = (_path, rootDir) => {
     .catch(err => {
       // Handle content.md not found
       if (err.code === 'ENOENT') {
-        gutil.log('Warning:', gutil.colors.yellow(relPath), 'not found');
+        log.warn(`Warning: ${colors.yellow(relPath)} not found`);
         return;
       }
 
       // Handle error parsing content.md's metadata
       if (err.front_matter_error) {
-        gutil.log('Error parsing front matter in:');
-        gutil.log(gutil.colors.yellow(markdownPath));
-        gutil.log(err.front_matter_error);
+        log.error('Error parsing front matter in:');
+        log.error(colors.red(markdownPath));
+        log.error(err.front_matter_error);
         utils.fail();
       }
 
       // Handle unknown errors
-      gutil.log(gutil.colors.yellow('Unrecognized error!'));
-      gutil.log(err);
+      log(colors.yellow('Unrecognized error!'));
+      log(err);
     })
     .then(parsed => parsed.body);
 };

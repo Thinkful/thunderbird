@@ -1,5 +1,6 @@
 const _ = require('lodash');
-const gutil = require('gulp-util');
+const colors = require('ansi-colors');
+const log = require('fancy-log');
 
 const { getIframe } = require('../utils');
 
@@ -19,8 +20,10 @@ module.exports = $ => {
   const rogueCodepen = $('codepen').first();
 
   if (rogueCodepen.length) {
-    gutil.log(
-      `Warning: There seems to be a rogue codepen tag: ${rogueCodepen}`
+    log.warn(
+      colors.yellow(
+        `Warning: There seems to be a rogue codepen tag: ${rogueCodepen}`
+      )
     );
   }
 };
