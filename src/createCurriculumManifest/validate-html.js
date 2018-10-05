@@ -26,7 +26,7 @@ module.exports = function validateHtml(html, filename) {
     onopentag: function(name, attrs) {
       if (_.indexOf(allowedTags, name) === -1) {
         log.warn(
-          `Warning: Unusual HTML Tag' ${colors.yellow(name)} in ${filename}`
+          `Warning: Unusual HTML Tag ${colors.yellow(name)} in ${filename}`
         );
       }
     },

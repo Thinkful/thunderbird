@@ -1,9 +1,10 @@
 const spawn = require('child_process').spawn;
-const StringDecoder = require('string_decoder').StringDecoder;
-const decoder = new StringDecoder('utf8');
 const log = require('fancy-log');
-const semver = require('semver');
 const request = require('request');
+const semver = require('semver');
+const { StringDecoder } = require('string_decoder');
+
+const decoder = new StringDecoder('utf8');
 
 const runIfLatest = function(run) {
   var packageJson = require('./../package.json');
