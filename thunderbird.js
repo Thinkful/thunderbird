@@ -1,12 +1,15 @@
 #! /usr/bin/env node
-var fs = require('fs');
-var path = require('path');
-var selfUpdate = require('./src/self-update');
-var spawn = require('child_process').spawn;
-var StringDecoder = require('string_decoder').StringDecoder;
+const _ = require('lodash');
+const fs = require('fs');
+const path = require('path');
+const { spawn } = require('child_process');
+const { StringDecoder } = require('string_decoder');
+const { argv } = require('yargs');
 
-var _ = require('lodash');
-var argv = require('yargs').argv;
+const selfUpdate = require('./src/self-update');
+
+/* Sets up Gulp output to stream into this process */
+const decoder = new StringDecoder('utf8');
 
 /* Thunderbird help */
 if (argv.help) {
@@ -81,9 +84,6 @@ function runThunderbird() {
   var gulp = spawn('gulp', gulpOptions, {
     cwd: gulpPath,
   });
-
-  /* Sets up Gulp output to stream into this process */
-  var decoder = new StringDecoder('utf8');
 
   gulp.stdout.on('data', function(data) {
     process.stdout.write(decoder.write(data) + decoder.end());
