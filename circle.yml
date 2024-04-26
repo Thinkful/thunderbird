@@ -1,7 +1,0 @@
-machine:
-  node:
-    version: v6.10.0
-
-test:
-  override:
-    - (cd ./legacy; ../node_modules/jasmine-node/bin/jasmine-node --verbose specs)
